@@ -4,54 +4,61 @@ This is a simple frontend-only CRUD (Create, Read, Update, Delete) system create
 
 ## Features
 
-- **Employee Management System**: A clean, modern interface for managing employee records
-- **HashMicro Corporate Colors**: Red, Navy and Orange throughout the UI
-- **Material Design**: Following Material UI aesthetic with cards, shadows, and clean typography
-- **Responsive Layout**: Works on both desktop and mobile devices
-- **Animations & Transitions**: Smooth animations for enhanced user experience
-- **Non-functional CRUD**: All UI elements for CRUD operations, without backend functionality
-- **Modal Dialogs**: For create, edit, view, and delete operations
+- **Comprehensive Dashboard**: Overview of key metrics with visual cards
+- **Employee Management**: Full CRUD interface for managing employee records
+- **Project Tracking**: Visual cards showing project progress and team members
+- **Task Management**: Task list with filtering, status toggling, and priority indicators
+- **HashMicro Corporate Colors**: Red (#e21c21), Navy (#172b4d), and Orange (#ff8f00) throughout the UI
+- **Responsive Design**: Works seamlessly on both desktop and mobile devices
+- **Animated UI Elements**: Smooth transitions and animations for enhanced user experience
+- **Modal Dialogs**: Animated modals for create, edit, view, and delete operations
 
 ## Technologies Used
 
 - **Vue.js 3**: Using the Composition API via CDN
-- **Tailwind CSS**: For utility-first styling
-- **PrimeVue**: UI component library for Vue
+- **Tailwind CSS**: For utility-first styling with custom configuration
+- **Font Awesome**: For icons and visual elements
 - **Pure HTML/CSS/JavaScript**: No build tools required
 
 ## Project Structure
 
-- `index.html` - Main HTML file with embedded Vue.js application
-- `styles.css` - Additional custom styles
-- `app.js` - Additional JavaScript functionality
+The application is contained within a single HTML file for simplicity:
+
+- `index.html` - Contains all HTML, CSS, JavaScript, and Vue components
 
 ## How to Use
 
 1. Extract the zip file
 2. Open `index.html` in any modern web browser
 3. Explore the CRUD interface:
-   - View the list of employees
-   - Click "Add Employee" to create a new employee
-   - Use the view, edit, and delete buttons for each employee
-   - Try the search and filter functionality
+   - Navigate between Dashboard, Employees, Projects, and Tasks views
+   - Click add buttons to create new records
+   - Use the view, edit, and delete buttons for each record
+   - Try the responsive sidebar (collapses on mobile)
+   - Test the modal dialogs and animations
 
 ## UI Features
 
-- **Data Table**: Sortable columns, pagination, and row hover effects
-- **Form Validation**: Required fields and data validation
-- **Responsive Design**: Works on different screen sizes
-- **Toast Notifications**: For success/error messages
-- **Confirmation Dialogs**: For delete operations
-- **Animations**: Throughout the interface for better user experience
-- **Color-coded Status**: Visual indicators for employee status
+- **Responsive Sidebar**: Collapses on mobile with smooth animations
+- **Dashboard Cards**: Interactive metric cards with hover effects
+- **Data Tables**: Clean, organized presentation of employee data
+- **Project Cards**: Visual representation of project status and progress
+- **Task List**: Interactive task list with status toggling
+- **Form Validation**: Form fields with proper labeling and structure
+- **Confirmation Dialogs**: For delete operations with clear warnings
+- **Animations**: Throughout the interface including:
+  - Bounce-in animation for modals
+  - Fade-in transitions between views
+  - Slide animations for sidebar
+  - Transform animations on hover
 
 ## Custom Styling
 
 The application uses HashMicro's corporate colors:
 
-- **Red** (#E31937): For important actions, delete buttons, and highlights
-- **Navy** (#1A2B5F): For primary elements, header, and buttons
-- **Orange** (#FF6600): For accents, hover states, and secondary elements
+- **Red** (#e21c21): For primary action buttons, alerts, and key UI elements
+- **Navy** (#172b4d): For navigation, headers, and accent elements
+- **Orange** (#ff8f00): For progress indicators, secondary elements, and highlights
 
 ## Development Notes
 

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HashMicro CRUD System</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PrimeVue CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/primevue@3/resources/themes/saga-blue/theme.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/primevue@3/resources/primevue.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/primeicons@6.0.1/primeicons.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom styles -->
+    <style>
+        :root {
+            --hash-red: #E31937;
+            --hash-navy: #1A2B5F;
+            --hash-orange: #FF6600;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .hash-btn-primary {
+            background-color: var(--hash-navy);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .hash-btn-primary:hover {
+            background-color: #2a3d78;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hash-btn-secondary {
+            background-color: var(--hash-red);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .hash-btn-secondary:hover {
+            background-color: #f03a56;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hash-btn-tertiary {
+            background-color: var(--hash-orange);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .hash-btn-tertiary:hover {
+            background-color: #ff8533;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.5s;
+        }
+        
+        .fade-enter, .fade-leave-to {
+            opacity: 0;
+        }
+        
+        .slide-fade-enter-active {
+            transition: all 0.3s ease;
+        }
+        
+        .slide-fade-leave-active {
+            transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+        }
+        
+        .slide-fade-enter, .slide-fade-leave-to {
+            transform: translateX(10px);
+            opacity: 0;
+        }
+        
+        .bounce-enter-active {
+            animation: bounce-in 0.5s;
+        }
+        
+        .bounce-leave-active {
+            animation: bounce-in 0.5s reverse;
+        }
+        
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .navbar {
+            background-color: var(--hash-navy);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .table-header {
+            background-color: var(--hash-navy);
+            color: white;
+        }
+        
+        .table-row:hover {
+            background-color: #f0f4f8;
+            transition: background-color 0.2s ease;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .card-shadow:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'hash-red': '#E31937',
+                        'hash-navy': '#1A2B5F',
+                        'hash-orange': '#FF6600',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <!-- Navbar -->
+        <div class="navbar text-white py-4 px-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <img src="https://hashmicro.com/wp-content/uploads/2022/01/Website-HasMicro-Logo.png" alt="HashMicro Logo" class="h-8 mr-4">
+                <h1 class="text-xl font-bold">Employee Management System</h1>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <p-button icon="pi pi-bell" class="p-button-rounded p-button-text p-button-plain"></p-button>
+                <p-button icon="pi pi-user" class="p-button-rounded p-button-text p-button-plain"></p-button>
+                <span>Admin User</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="container mx-auto p-6">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-hash-navy">Employees List</h2>
+                <a href="#/create" @click.prevent="showCreateForm = true" class="hash-btn-primary px-4 py-2 rounded-md flex items-center">
+                    <i class="pi pi-plus mr-2"></i> Add Employee
+                </a>
+            </div>
+            
+            <!-- Filters -->
+            <div class="bg-white rounded-lg p-4 mb-6 card-shadow">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <p-inputtext v-model="filters.search" placeholder="Search by name or ID" class="w-full"></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                        <p-dropdown v-model="filters.department" :options="departments" optionLabel="name" placeholder="Select Department" class="w-full"></p-dropdown>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <p-dropdown v-model="filters.status" :options="statuses" optionLabel="name" placeholder="Select Status" class="w-full"></p-dropdown>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button @click="clearFilters" class="text-hash-navy font-medium mr-4 hover:underline">Clear</button>
+                    <button @click="applyFilters" class="hash-btn-secondary px-4 py-2 rounded-md">Apply Filters</button>
+                </div>
+            </div>
+            
+            <!-- Data Table -->
+            <div class="bg-white rounded-lg overflow-hidden card-shadow">
+                <p-datatable :value="filteredEmployees" :paginator="true" :rows="5" 
+                            :rowsPerPageOptions="[5, 10, 20]" class="p-datatable-sm">
+                    <template #header>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold">Employees</span>
+                            <div>
+                                <p-button icon="pi pi-file-excel" class="p-button-success p-button-outlined mr-2"></p-button>
+                                <p-button icon="pi pi-file-pdf" class="p-button-danger p-button-outlined"></p-button>
+                            </div>
+                        </div>
+                    </template>
+                    <template #empty>
+                        <div class="text-center py-4">No employees found.</div>
+                    </template>
+                    <p-column field="id" header="ID" sortable></p-column>
+                    <p-column field="name" header="Name" sortable></p-column>
+                    <p-column field="department" header="Department" sortable></p-column>
+                    <p-column field="position" header="Position" sortable></p-column>
+                    <p-column field="status" header="Status">
+                        <template #body="slotProps">
+                            <p-tag :value="slotProps.data.status" 
+                                :severity="getStatusSeverity(slotProps.data.status)">
+                            </p-tag>
+                        </template>
+                    </p-column>
+                    <p-column header="Actions" style="width: 15%">
+                        <template #body="slotProps">
+                            <div class="flex space-x-2">
+                                <a href="#/view" @click.prevent="viewEmployee(slotProps.data)" 
+                                   class="text-hash-navy hover:text-hash-orange">
+                                    <i class="pi pi-eye"></i>
+                                </a>
+                                <a href="#/edit" @click.prevent="editEmployee(slotProps.data)" 
+                                   class="text-hash-navy hover:text-hash-orange">
+                                    <i class="pi pi-pencil"></i>
+                                </a>
+                                <a href="#/delete" @click.prevent="confirmDelete(slotProps.data)" 
+                                   class="text-hash-red hover:text-hash-orange">
+                                    <i class="pi pi-trash"></i>
+                                </a>
+                            </div>
+                        </template>
+                    </p-column>
+                </p-datatable>
+            </div>
+            
+            <!-- Create Employee Form (Modal) -->
+            <p-dialog v-model:visible="showCreateForm" header="Add New Employee" modal 
+                     :style="{width: '50vw'}" class="p-fluid">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
+                        <p-inputtext v-model="newEmployee.firstName" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label>
+                        <p-inputtext v-model="newEmployee.lastName" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID*</label>
+                        <p-inputtext v-model="newEmployee.id" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                        <p-inputtext v-model="newEmployee.email" type="email" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Department*</label>
+                        <p-dropdown v-model="newEmployee.department" :options="departments" optionLabel="name" placeholder="Select Department" required></p-dropdown>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Position*</label>
+                        <p-inputtext v-model="newEmployee.position" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Joining Date*</label>
+                        <p-calendar v-model="newEmployee.joinDate" dateFormat="dd/mm/yy"></p-calendar>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status*</label>
+                        <p-dropdown v-model="newEmployee.status" :options="statuses" optionLabel="name" placeholder="Select Status" required></p-dropdown>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <p-textarea v-model="newEmployee.address" rows="3" autoResize></p-textarea>
+                </div>
+                <template #footer>
+                    <button @click="showCreateForm = false" class="px-4 py-2 border border-gray-300 rounded-md mr-3">Cancel</button>
+                    <a href="#" @click.prevent="saveEmployee" class="hash-btn-primary px-4 py-2 rounded-md">
+                        <i class="pi pi-check mr-2"></i> Save
+                    </a>
+                </template>
+            </p-dialog>
+            
+            <!-- View Employee Modal -->
+            <p-dialog v-model:visible="showViewEmployee" :header="viewingEmployee.name || 'Employee Details'" modal 
+                     :style="{width: '40vw'}">
+                <div v-if="viewingEmployee.id" class="space-y-4">
+                    <div class="flex justify-center mb-4">
+                        <div class="h-24 w-24 rounded-full bg-hash-navy text-white flex items-center justify-center text-2xl">
+                            {{ getInitials(viewingEmployee.name) }}
+                        </div>
+                    </div>
+                    
+                    <p-divider></p-divider>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Employee ID</p>
+                            <p class="font-medium">{{ viewingEmployee.id }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Name</p>
+                            <p class="font-medium">{{ viewingEmployee.name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Department</p>
+                            <p class="font-medium">{{ viewingEmployee.department }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Position</p>
+                            <p class="font-medium">{{ viewingEmployee.position }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p-tag :value="viewingEmployee.status" 
+                                :severity="getStatusSeverity(viewingEmployee.status)">
+                            </p-tag>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Joining Date</p>
+                            <p class="font-medium">{{ viewingEmployee.joinDate }}</p>
+                        </div>
+                    </div>
+                    
+                    <p-divider></p-divider>
+                    
+                    <div>
+                        <p class="text-sm text-gray-500">Email</p>
+                        <p class="font-medium">{{ viewingEmployee.email }}</p>
+                    </div>
+                    
+                    <div>
+                        <p class="text-sm text-gray-500">Address</p>
+                        <p class="font-medium">{{ viewingEmployee.address || 'Not specified' }}</p>
+                    </div>
+                </div>
+                <template #footer>
+                    <a href="#" @click.prevent="showViewEmployee = false" class="hash-btn-primary px-4 py-2 rounded-md">
+                        <i class="pi pi-times mr-2"></i> Close
+                    </a>
+                </template>
+            </p-dialog>
+            
+            <!-- Edit Employee Modal -->
+            <p-dialog v-model:visible="showEditForm" header="Edit Employee" modal 
+                     :style="{width: '50vw'}" class="p-fluid">
+                <div v-if="editingEmployee.id" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
+                        <p-inputtext v-model="editingEmployee.firstName" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label>
+                        <p-inputtext v-model="editingEmployee.lastName" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID*</label>
+                        <p-inputtext v-model="editingEmployee.id" disabled></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+                        <p-inputtext v-model="editingEmployee.email" type="email" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Department*</label>
+                        <p-dropdown v-model="editingEmployee.departmentObj" :options="departments" optionLabel="name" placeholder="Select Department" required></p-dropdown>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Position*</label>
+                        <p-inputtext v-model="editingEmployee.position" required></p-inputtext>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Joining Date*</label>
+                        <p-calendar v-model="editingEmployee.joinDateObj" dateFormat="dd/mm/yy"></p-calendar>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status*</label>
+                        <p-dropdown v-model="editingEmployee.statusObj" :options="statuses" optionLabel="name" placeholder="Select Status" required></p-dropdown>
+                    </div>
+                </div>
+                <div v-if="editingEmployee.id">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <p-textarea v-model="editingEmployee.address" rows="3" autoResize></p-textarea>
+                </div>
+                <template #footer>
+                    <button @click="showEditForm = false" class="px-4 py-2 border border-gray-300 rounded-md mr-3">Cancel</button>
+                    <a href="#" @click.prevent="updateEmployee" class="hash-btn-primary px-4 py-2 rounded-md">
+                        <i class="pi pi-check mr-2"></i> Update
+                    </a>
+                </template>
+            </p-dialog>
+            
+            <!-- Delete Confirmation -->
+            <p-dialog v-model:visible="showDeleteConfirm" header="Confirm Deletion" modal 
+                     :style="{width: '30vw'}" class="p-fluid">
+                <div class="flex items-center">
+                    <i class="pi pi-exclamation-triangle text-hash-red text-4xl mr-4"></i>
+                    <div>
+                        <h3 class="text-xl font-medium mb-2">Delete Employee</h3>
+                        <p class="text-gray-600">Are you sure you want to delete employee <strong>{{ deletingEmployee.name }}</strong>? This action cannot be undone.</p>
+                    </div>
+                </div>
+                <template #footer>
+                    <button @click="showDeleteConfirm = false" class="px-4 py-2 border border-gray-300 rounded-md mr-3">Cancel</button>
+                    <a href="#" @click.prevent="deleteEmployee" class="hash-btn-secondary px-4 py-2 rounded-md">
+                        <i class="pi pi-trash mr-2"></i> Delete
+                    </a>
+                </template>
+            </p-dialog>
+            
+            <!-- Toast for notifications -->
+            <p-toast></p-toast>
+        </div>
+    </div>
+    
+    <!-- Vue 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <!-- PrimeVue -->
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/button.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/inputtext.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/dropdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/datatable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/column.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/dialog.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/textarea.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/calendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/tag.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/toast.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/primevue@3/divider.min.js"></script>
+    
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+        
+        const app = createApp({
+            setup() {
+                // Sample data
+                const employees = ref([
+                    {
+                        id: 'EMP-001',
+                        name: 'John Smith',
+                        firstName: 'John',
+                        lastName: 'Smith',
+                        email: 'john.smith@hashmicro.com',
+                        department: 'Engineering',
+                        position: 'Senior Developer',
+                        status: 'Active',
+                        joinDate: '01/03/2022',
+                        address: '123 Main Street, Singapore 123456'
+                    },
+                    {
+                        id: 'EMP-002',
+                        name: 'Sarah Johnson',
+                        firstName: 'Sarah',
+                        lastName: 'Johnson',
+                        email: 'sarah.johnson@hashmicro.com',
+                        department: 'Marketing',
+                        position: 'Marketing Manager',
+                        status: 'Active',
+                        joinDate: '15/05/2021',
+                        address: '456 Orchard Road, Singapore 234567'
+                    },
+                    {
+                        id: 'EMP-003',
+                        name: 'Robert Chen',
+                        firstName: 'Robert',
+                        lastName: 'Chen',
+                        email: 'robert.chen@hashmicro.com',
+                        department: 'Finance',
+                        position: 'Financial Analyst',
+                        status: 'On Leave',
+                        joinDate: '10/11/2022',
+                        address: '789 Alexandra Road, Singapore 345678'
+                    },
+                    {
+                        id: 'EMP-004',
+                        name: 'Emily Wong',
+                        firstName: 'Emily',
+                        lastName: 'Wong',
+                        email: 'emily.wong@hashmicro.com',
+                        department: 'Human Resources',
+                        position: 'HR Specialist',
+                        status: 'Active',
+                        joinDate: '22/01/2023',
+                        address: '101 Thomson Road, Singapore 456789'
+                    },
+                    {
+                        id: 'EMP-005',
+                        name: 'David Kumar',
+                        firstName: 'David',
+                        lastName: 'Kumar',
+                        email: 'david.kumar@hashmicro.com',
+                        department: 'Sales',
+                        position: 'Sales Director',
+                        status: 'Active',
+                        joinDate: '05/08/2021',
+                        address: '202 Bukit Timah Road, Singapore 567890'
+                    },
+                    {
+                        id: 'EMP-006',
+                        name: 'Michelle Tan',
+                        firstName: 'Michelle',
+                        lastName: 'Tan',
+                        email: 'michelle.tan@hashmicro.com',
+                        department: 'Customer Success',
+                        position: 'Customer Support Rep',
+                        status: 'Inactive',
+                        joinDate: '17/02/2022',
+                        address: '303 Serangoon Road, Singapore 678901'
+                    },
+                    {
+                        id: 'EMP-007',
+                        name: 'Michael Lee',
+                        firstName: 'Michael',
+                        lastName: 'Lee',
+                        email: 'michael.lee@hashmicro.com',
+                        department: 'Engineering',
+                        position: 'DevOps Engineer',
+                        status: 'Active',
+                        joinDate: '25/06/2023',
+                        address: '404 Balestier Road, Singapore 789012'
+                    }
+                ]);
+                
+                // Dropdown options
+                const departments = ref([
+                    { name: 'Engineering', code: 'eng' },
+                    { name: 'Marketing', code: 'mkt' },
+                    { name: 'Finance', code: 'fin' },
+                    { name: 'Human Resources', code: 'hr' },
+                    { name: 'Sales', code: 'sls' },
+                    { name: 'Customer Success', code: 'cs' }
+                ]);
+                
+                const statuses = ref([
+                    { name: 'Active', code: 'active' },
+                    { name: 'Inactive', code: 'inactive' },
+                    { name: 'On Leave', code: 'onleave' }
+                ]);
+                
+                // Filter states
+                const filters = ref({
+                    search: '',
+                    department: null,
+                    status: null
+                });
+                
+                const appliedFilters = ref({
+                    search: '',
+                    department: null,
+                    status: null
+                });
+                
+                // Modal states
+                const showCreateForm = ref(false);
+                const showEditForm = ref(false);
+                const showViewEmployee = ref(false);
+                const showDeleteConfirm = ref(false);
+                
+                // Form data
+                const newEmployee = ref({
+                    id: '',
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    department: null,
+                    position: '',
+                    status: null,
+                    joinDate: null,
+                    address: ''
+                });
+                
+                const editingEmployee = ref({});
+                const viewingEmployee = ref({});
+                const deletingEmployee = ref({});
+                
+                // Computed filtered employees
+                const filteredEmployees = computed(() => {
+                    return employees.value.filter(emp => {
+                        let matchSearch = true;
+                        let matchDepartment = true;
+                        let matchStatus = true;
+                        
+                        if (appliedFilters.value.search) {
+                            matchSearch = emp.name.toLowerCase().includes(appliedFilters.value.search.toLowerCase()) || 
+                                       emp.id.toLowerCase().includes(appliedFilters.value.search.toLowerCase());
+                        }
+                        
+                        if (appliedFilters.value.department) {
+                            matchDepartment = emp.department === appliedFilters.value.department.name;
+                        }
+                        
+                        if (appliedFilters.value.status) {
+                            matchStatus = emp.status === appliedFilters.value.status.name;
+                        }
+                        
+                        return matchSearch && matchDepartment && matchStatus;
+                    });
+                });
+                
+                // Methods
+                const clearFilters = () => {
+                    filters.value = {
+                        search: '',
+                        department: null,
+                        status: null
+                    };
+                };
+                
+                const applyFilters = () => {
+                    appliedFilters.value = { ...filters.value };
+                };
+                
+                const getStatusSeverity = (status) => {
+                    switch(status) {
+                        case 'Active': return 'success';
+                        case 'Inactive': return 'danger';
+                        case 'On Leave': return 'warning';
+                        default: return 'info';
+                    }
+                };
+                
+                const getInitials = (name) => {
+                    if (!name) return '';
+                    return name.split(' ').map(n => n[0]).join('');
+                };
+                
+                const showToast = (severity, summary, detail) => {
+                    const toast = window.PrimeVue.useToast();
+                    toast.add({ severity, summary, detail, life: 3000 });
+                };
+                
+                const viewEmployee = (employee) => {
+                    viewingEmployee.value = { ...employee };
+                    showViewEmployee.value = true;
+                };
+                
+                const editEmployee = (employee) => {
+                    // Find the corresponding objects for dropdowns
+                    const deptObj = departments.value.find(d => d.name === employee.department);
+                    const statusObj = statuses.value.find(s => s.name === employee.status);
+                    
+                    // Create a date object from the string
+                    const dateParts = employee.joinDate.split('/');
+                    const joinDateObj = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+                    
+                    editingEmployee.value = { 
+                        ...employee,
+                        departmentObj: deptObj,
+                        statusObj: statusObj,
+                        joinDateObj: joinDateObj
+                    };
+                    showEditForm.value = true;
+                };
+                
+                const confirmDelete = (employee) => {
+                    deletingEmployee.value = { ...employee };
+                    showDeleteConfirm.value = true;
+                };
+                
+                const saveEmployee = () => {
+                    // Validate form
+                    if (!newEmployee.value.firstName || 
+                        !newEmployee.value.lastName || 
+                        !newEmployee.value.id || 
+                        !newEmployee.value.email || 
+                        !newEmployee.value.department || 
+                        !newEmployee.value.position || 
+                        !newEmployee.value.status || 
+                        !newEmployee.value.joinDate) {
+                        showToast('error', 'Validation Error', 'Please fill in all required fields');
+                        return;
+                    }
+                    
+                    // Format date
+                    const date = newEmployee.value.joinDate;
+                    const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+                    
+                    // Create new employee object
+                    const employee = {
+                        id: newEmployee.value.id,
+                        name: `${newEmployee.value.firstName} ${newEmployee.value.lastName}`,
+                        firstName: newEmployee.value.firstName,
+                        lastName: newEmployee.value.lastName,
+                        email: newEmployee.value.email,
+                        department: newEmployee.value.department.name,
+                        position: newEmployee.value.position,
+                        status: newEmployee.value.status.name,
+                        joinDate: formattedDate,
+                        address: newEmployee.value.address
+                    };
+                    
+                    // Add to employees array
+                    employees.value.unshift(employee);
+                    
+                    // Show success message
+                    showToast('success', 'Success', 'Employee added successfully');
+                    
+                    // Reset form and close modal
+                    resetForm();
+                    showCreateForm.value = false;
+                };
+                
+                const updateEmployee = () => {
+                    // Validate form
+                    if (!editingEmployee.value.firstName || 
+                        !editingEmployee.value.lastName || 
+                        !editingEmployee.value.email || 
+                        !editingEmployee.value.departmentObj || 
+                        !editingEmployee.value.position || 
+                        !editingEmployee.value.statusObj || 
+                        !editingEmployee.value.joinDateObj) {
+                        showToast('error', 'Validation Error', 'Please fill in all required fields');
+                        return;
+                    }
+                    
+                    // Format date
+                    const date = editingEmployee.value.joinDateObj;
+                    const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+                    
+                    // Find employee index
+                    const index = employees.value.findIndex(emp => emp.id === editingEmployee.value.id);
+                    
+                    if (index !== -1) {
+                        // Update employee
+                        employees.value[index] = {
+                            id: editingEmployee.value.id,
+                            name: `${editingEmployee.value.firstName} ${editingEmployee.value.lastName}`,
+                            firstName: editingEmployee.value.firstName,
+                            lastName: editingEmployee.value.lastName,
+                            email: editingEmployee.value.email,
+                            department: editingEmployee.value.departmentObj.name,
+                            position: editingEmployee.value.position,
+                            status: editingEmployee.value.statusObj.name,
+                            joinDate: formattedDate,
+                            address: editingEmployee.value.address
+                        };
+                        
+                        // Show success message
+                        showToast('success', 'Success', 'Employee updated successfully');
+                        
+                        // Close modal
+                        showEditForm.value = false;
+                    }
+                };
+                
+                const deleteEmployee = () => {
+                    // Find employee index
+                    const index = employees.value.findIndex(emp => emp.id === deletingEmployee.value.id);
+                    
+                    if (index !== -1) {
+                        // Remove employee
+                        employees.value.splice(index, 1);
+                        
+                        // Show success message
+                        showToast('success', 'Success', 'Employee deleted successfully');
+                        
+                        // Close modal
+                        showDeleteConfirm.value = false;
+                    }
+                };
+                
+                const resetForm = () => {
+                    newEmployee.value = {
+                        id: '',
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                        department: null,
+                        position: '',
+                        status: null,
+                        joinDate: null,
+                        address: ''
+                    };
+                };
+                
+                // Lifecycle hooks
+                onMounted(() => {
+                    // Animation for table rows
+                    const addRowAnimation = () => {
+                        const rows = document.querySelectorAll('.p-datatable-tbody tr');
+                        rows.forEach((row, index) => {
+                            row.classList.add('table-row');
+                            row.style.animation = `fadeIn 0.3s ease ${index * 0.05}s forwards`;
+                            row.style.opacity = '0';
+                        });
+                    };
+                    
+                    // Add animation after a small delay to ensure the table is fully rendered
+                    setTimeout(addRowAnimation, 100);
+                });
+                
+                return {
+                    employees,
+                    departments,
+                    statuses,
+                    filters,
+                    appliedFilters,
+                    showCreateForm,
+                    showEditForm,
+                    showViewEmployee,
+                    showDeleteConfirm,
+                    newEmployee,
+                    editingEmployee,
+                    viewingEmployee,
+                    deletingEmployee,
+                    filteredEmployees,
+                    clearFilters,
+                    applyFilters,
+                    getStatusSeverity,
+                    getInitials,
+                    viewEmployee,
+                    editEmployee,
+                    confirmDelete,
+                    saveEmployee,
+                    updateEmployee,
+                    deleteEmployee,
+                    resetForm
+                };
+            }
+        });
+        
+        // Register PrimeVue components
+        app.use(PrimeVue.config.default);
+        app.component('p-button', Button);
+        app.component('p-inputtext', InputText);
+        app.component('p-dropdown', Dropdown);
+        app.component('p-datatable', DataTable);
+        app.component('p-column', Column);
+        app.component('p-dialog', Dialog);
+        app.component('p-textarea', Textarea);
+        app.component('p-calendar', Calendar);
+        app.component('p-tag', Tag);
+        app.component('p-toast', Toast);
+        app.component('p-divider', Divider);
+        
+        // Create global PrimeVue Toast Service
+        window.PrimeVue = {
+            useToast: () => app.config.globalProperties.$toast
+        };
+        
+        // Mount the app
+        app.mount('#app');
+    </script>
+</body>
+</html>

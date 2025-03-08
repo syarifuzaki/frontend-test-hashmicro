@@ -23,6 +23,9 @@
     <!-- Toast Library (Toastify-js) -->
     <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+
+    <!-- Chart Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     
     <!-- Custom Tailwind Configuration -->
     <script>
@@ -187,26 +190,26 @@
                 <p class="text-gray-400 text-xs uppercase mb-2">Settings</p>
                 <a
                   href="#"
-                  @click="setActiveView('component')"
+                  @click="setActiveView('blank')"
                   :class="[
                     'flex items-center p-2 rounded transition-colors', 
-                    activeView === 'component' ? 'bg-hashmicro-orange text-white hover:bg-orange-500' : 'hover:bg-gray-700'
+                    activeView === 'blank' ? 'bg-hashmicro-orange text-white hover:bg-orange-500' : 'hover:bg-gray-700'
                   ]"
                 >
-                  <i class="fas fa-user mr-3"></i>
-                  <span>Components</span>
+                  <i class="fas fa-file mr-3"></i>
+                  <span>Blank Page</span>
                 </a>
-                <a
+                <!-- <a
                   href="#"
-                  @click="setActiveView('settings')"
+                  @click="setActiveView('components')"
                   :class="[
                     'flex items-center p-2 rounded transition-colors', 
-                    activeView === 'settings' ? 'bg-hashmicro-orange text-white hover:bg-orange-500' : 'hover:bg-gray-700'
+                    activeView === 'components' ? 'bg-hashmicro-orange text-white hover:bg-orange-500' : 'hover:bg-gray-700'
                   ]"
                 >
                   <i class="fas fa-cog mr-3"></i>
-                  <span>Settings</span>
-                </a>
+                  <span>Components</span>
+                </a> -->
               </div>
             </div>
   
@@ -272,8 +275,9 @@
             class="animate-fade-in"
           >
             <h1 class="text-2xl font-bold mb-6 text-hashmicro-navy">Dashboard</h1>
-  
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
               <div
                 class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
               >
@@ -285,11 +289,12 @@
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Total Employees</p>
-                    <p class="text-2xl font-bold">156</p>
+                    <p class="text-2xl font-bold">{{ totalEmployees }}</p>
+                    <p class="text-xs text-green-500">{{ activeEmployees }} active</p>
                   </div>
                 </div>
               </div>
-  
+
               <div
                 class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
               >
@@ -301,11 +306,12 @@
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Active Projects</p>
-                    <p class="text-2xl font-bold">24</p>
+                    <p class="text-2xl font-bold">{{ activeProjects }}</p>
+                    <p class="text-xs text-gray-500">out of {{ projects.length }} total</p>
                   </div>
                 </div>
               </div>
-  
+
               <div
                 class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
               >
@@ -317,12 +323,191 @@
                   </div>
                   <div>
                     <p class="text-sm text-gray-500">Pending Tasks</p>
-                    <p class="text-2xl font-bold">78</p>
+                    <p class="text-2xl font-bold">{{ pendingTasks }}</p>
+                    <p class="text-xs text-gray-500">{{ completedTasks }} completed</p>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              >
+                <div class="flex items-center">
+                  <div
+                    class="bg-green-500 bg-opacity-20 p-3 rounded-full mr-4"
+                  >
+                    <i class="fas fa-chart-line text-green-500"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Completion Rate</p>
+                    <p class="text-2xl font-bold">{{ Math.round(completedTasks / (pendingTasks + completedTasks) * 100) || 0 }}%</p>
+                    <p class="text-xs text-gray-500">task completion</p>
                   </div>
                 </div>
               </div>
             </div>
-  
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <!-- Project Status Chart -->
+              <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
+                  Project Status Overview
+                </h2>
+                <div class="h-64">
+                  <doughnut-chart :chart-data="projectStatusChartData" :chart-options="projectStatusChartOptions"></doughnut-chart>
+                </div>
+                <div class="mt-2">
+                  <div class="grid grid-cols-2 gap-2 mt-4">
+                    <div v-for="(status, index) in projectStatusChartData.labels" :key="index" class="flex items-center">
+                      <div class="w-3 h-3 rounded-full mr-2" 
+                        :style="{backgroundColor: projectStatusChartData.datasets[0].backgroundColor[index]}">
+                      </div>
+                      <span class="text-sm">{{ status }}: {{ projectStatusChartData.datasets[0].data[index] }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Department Staff Distribution -->
+              <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
+                  Staff by Department
+                </h2>
+                <div class="h-64">
+                  <bar-chart :chart-data="departmentStaffChartData" :chart-options="departmentStaffChartOptions"></bar-chart>
+                </div>
+              </div>
+
+              <!-- Task Priority Distribution -->
+              <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
+                  Task Priority Distribution
+                </h2>
+                <div class="h-64">
+                  <doughnut-chart :chart-data="taskPriorityChartData" :chart-options="taskPriorityChartOptions"></doughnut-chart>
+                </div>
+                <div class="mt-4">
+                  <div class="space-y-4">
+                    <div v-for="(priority, index) in taskPriorityChartData.labels" :key="index">
+                      <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center">
+                          <div class="w-3 h-3 rounded-full mr-2" 
+                            :style="{backgroundColor: taskPriorityChartData.datasets[0].backgroundColor[index]}">
+                          </div>
+                          <span class="text-sm font-medium">{{ priority }} Priority</span>
+                        </div>
+                        <span class="text-sm font-medium">{{ taskPriorityChartData.datasets[0].data[index] }} tasks</span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full" 
+                          :style="{
+                            width: `${taskPriorityChartData.datasets[0].data[index] / tasks.length * 100}%`,
+                            backgroundColor: taskPriorityChartData.datasets[0].backgroundColor[index]
+                          }">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Project Progress -->
+              <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
+                  Project Progress
+                </h2>
+                <div class="h-64">
+                  <horizontal-bar-chart :chart-data="projectProgressChartData" :chart-options="projectProgressChartOptions"></horizontal-bar-chart>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lists Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <!-- Upcoming Deadlines -->
+              <div class="bg-white rounded-lg shadow">
+                <div class="border-b px-6 py-3">
+                  <h2 class="text-lg font-bold text-hashmicro-navy">
+                    Upcoming Deadlines
+                  </h2>
+                </div>
+                <div class="divide-y">
+                  <div v-for="task in upcomingDeadlines" :key="task.id" class="px-6 py-4">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h3 class="font-medium text-gray-900">{{ task.title }}</h3>
+                        <p class="text-sm text-gray-500">{{ task.project }}</p>
+                      </div>
+                      <div class="flex flex-col items-end">
+                        <span :class="[
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full mb-1',
+                          task.priority === 'High' ? 'bg-red-100 text-red-800' : 
+                          task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-green-100 text-green-800'
+                        ]">
+                          {{ task.priority }}
+                        </span>
+                        <span class="text-sm text-gray-500">Due: {{ task.dueDate }}</span>
+                      </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                      <div class="flex items-center">
+                        <i class="fas fa-user-circle text-gray-400 mr-2"></i>
+                        <span class="text-sm text-gray-600">{{ task.assignedTo }}</span>
+                      </div>
+                      <span :class="[
+                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                        task.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                        task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
+                        'bg-yellow-100 text-yellow-800'
+                      ]">
+                        {{ task.status }}
+                      </span>
+                    </div>
+                  </div>
+                  <div v-if="upcomingDeadlines.length === 0" class="px-6 py-4 text-center text-gray-500">
+                    No upcoming deadlines
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recently Completed Tasks -->
+              <div class="bg-white rounded-lg shadow">
+                <div class="border-b px-6 py-3">
+                  <h2 class="text-lg font-bold text-hashmicro-navy">
+                    Recently Completed Tasks
+                  </h2>
+                </div>
+                <div class="divide-y">
+                  <div v-for="task in recentlyCompletedTasks" :key="task.id" class="px-6 py-4">
+                    <div class="flex justify-between">
+                      <div>
+                        <h3 class="font-medium text-gray-900">{{ task.title }}</h3>
+                        <p class="text-sm text-gray-500">{{ task.project }}</p>
+                      </div>
+                      <span :class="[
+                        'px-2 h-6 inline-flex text-xs leading-5 font-semibold rounded-full',
+                        task.priority === 'High' ? 'bg-red-100 text-red-800' : 
+                        task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-green-100 text-green-800'
+                      ]">
+                        {{ task.priority }}
+                      </span>
+                    </div>
+                    <div class="mt-2 flex items-center">
+                      <i class="fas fa-user-circle text-gray-400 mr-2"></i>
+                      <span class="text-sm text-gray-600">{{ task.assignedTo }}</span>
+                    </div>
+                  </div>
+                  <div v-if="recentlyCompletedTasks.length === 0" class="px-6 py-4 text-center text-gray-500">
+                    No completed tasks yet
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activities -->
             <div class="bg-white rounded-lg shadow p-6 mb-8">
               <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
                 Recent Activities
@@ -335,11 +520,11 @@
                     <i class="fas fa-user-plus text-hashmicro-red"></i>
                   </div>
                   <div>
-                    <p class="font-medium">New employee John Doe was added</p>
+                    <p class="font-medium">New employee {{ employees[employees.length - 1]?.name || 'John Doe' }} was added</p>
                     <p class="text-sm text-gray-500">2 hours ago</p>
                   </div>
                 </div>
-  
+
                 <div
                   class="flex p-3 border-l-4 border-hashmicro-orange bg-orange-50 rounded"
                 >
@@ -348,12 +533,12 @@
                   </div>
                   <div>
                     <p class="font-medium">
-                      Project "Website Redesign" status updated to "In Progress"
+                      Project "{{ projects.find(p => p.status === 'In Progress')?.name || 'Website Redesign' }}" status updated to "In Progress"
                     </p>
                     <p class="text-sm text-gray-500">5 hours ago</p>
                   </div>
                 </div>
-  
+
                 <div
                   class="flex p-3 border-l-4 border-hashmicro-navy bg-blue-50 rounded"
                 >
@@ -362,7 +547,7 @@
                   </div>
                   <div>
                     <p class="font-medium">
-                      Task "Update user documentation" marked as completed
+                      Task "{{ recentlyCompletedTasks[0]?.title || 'Update user documentation' }}" marked as completed
                     </p>
                     <p class="text-sm text-gray-500">Yesterday</p>
                   </div>

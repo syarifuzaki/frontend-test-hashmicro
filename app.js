@@ -1,6 +1,144 @@
-const { createApp, ref, computed } = Vue;
+const DoughnutChart = {
+  props: ['chartData', 'chartOptions'],
+  template: `<div class="chart-container"><canvas ref="chartCanvas"></canvas></div>`,
+  data() {
+    return {
+      chart: null
+    };
+  },
+  mounted() {
+    this.createChart();
+  },
+  methods: {
+    createChart() {
+      const ctx = this.$refs.chartCanvas.getContext('2d');
+      this.chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: this.chartData,
+        options: this.chartOptions || {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right'
+            }
+          }
+        }
+      });
+    }
+  },
+  watch: {
+    chartData: {
+      handler() {
+        if (this.chart) {
+          this.chart.data = this.chartData;
+          this.chart.update();
+        }
+      },
+      deep: true
+    }
+  },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+};
 
-createApp({
+const BarChart = {
+  props: ['chartData', 'chartOptions'],
+  template: `<div class="chart-container"><canvas ref="chartCanvas"></canvas></div>`,
+  data() {
+    return {
+      chart: null
+    };
+  },
+  mounted() {
+    this.createChart();
+  },
+  methods: {
+    createChart() {
+      const ctx = this.$refs.chartCanvas.getContext('2d');
+      this.chart = new Chart(ctx, {
+        type: 'bar',
+        data: this.chartData,
+        options: this.chartOptions || {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y'
+        }
+      });
+    }
+  },
+  watch: {
+    chartData: {
+      handler() {
+        if (this.chart) {
+          this.chart.data = this.chartData;
+          this.chart.update();
+        }
+      },
+      deep: true
+    }
+  },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+};
+
+const HorizontalBarChart = {
+  props: ['chartData', 'chartOptions'],
+  template: `<div class="chart-container"><canvas ref="chartCanvas"></canvas></div>`,
+  data() {
+    return {
+      chart: null
+    };
+  },
+  mounted() {
+    this.createChart();
+  },
+  methods: {
+    createChart() {
+      const ctx = this.$refs.chartCanvas.getContext('2d');
+      this.chart = new Chart(ctx, {
+        type: 'bar',
+        data: this.chartData,
+        options: this.chartOptions || {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          scales: {
+            x: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+  },
+  watch: {
+    chartData: {
+      handler() {
+        if (this.chart) {
+          this.chart.data = this.chartData;
+          this.chart.update();
+        }
+      },
+      deep: true
+    }
+  },
+  beforeUnmount() {
+    if (this.chart) {
+      this.chart.destroy();
+    }
+  }
+};
+
+const { createApp, ref, computed } = Vue;
+const app = createApp({
   setup() {
     // UI state
     const sidebarOpen = ref(false);
@@ -1163,7 +1301,6 @@ createApp({
     const currentPage = ref(1);
     const itemsPerPage = ref(5);
 
-    // Add these computed properties to the setup() function
     const filteredEmployees = computed(() => {
       return employees.value.filter(employee => {
         // Search filter
@@ -1192,7 +1329,6 @@ createApp({
       return Math.ceil(filteredEmployees.value.length / itemsPerPage.value);
     });
 
-    // Add these methods to the setup() function
     const goToPage = (page) => {
       if (page >= 1 && page <= totalPages.value) {
         currentPage.value = page;
@@ -1210,6 +1346,283 @@ createApp({
         currentPage.value++;
       }
     };
+
+    // Dashboard
+    // Card summary data
+    const totalEmployees = computed(() => employees.value.length);
+    const activeEmployees = computed(() => employees.value.filter(emp => emp.status === 'Active').length);
+    const activeProjects = computed(() => projects.value.filter(project => project.status === 'In Progress').length);
+    const pendingTasks = computed(() => tasks.value.filter(task => task.status === 'Pending').length);
+    const completedTasks = computed(() => tasks.value.filter(task => task.status === 'Completed').length);
+
+    // Chart data
+    const projectStatusData = computed(() => {
+      const statusCounts = {
+        'Not Started': 0,
+        'In Progress': 0,
+        'On Hold': 0,
+        'Completed': 0
+      };
+      
+      projects.value.forEach(project => {
+        statusCounts[project.status]++;
+      });
+      
+      return Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
+    });
+
+    const taskPriorityData = computed(() => {
+      const priorityCounts = {
+        'High': 0,
+        'Medium': 0,
+        'Low': 0
+      };
+      
+      tasks.value.forEach(task => {
+        priorityCounts[task.priority]++;
+      });
+      
+      return Object.entries(priorityCounts).map(([name, value]) => ({ name, value }));
+    });
+
+    const departmentStaffCount = computed(() => {
+      const deptCounts = {};
+      
+      employees.value.forEach(employee => {
+        if (!deptCounts[employee.department]) {
+          deptCounts[employee.department] = 0;
+        }
+        deptCounts[employee.department]++;
+      });
+      
+      return Object.entries(deptCounts)
+        .map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value); // Sort by count descending
+    });
+
+    const projectProgressList = computed(() => {
+      return projects.value.map(project => ({
+        name: project.name,
+        progress: project.progress
+      })).sort((a, b) => b.progress - a.progress); // Sort by progress descending
+    });
+
+    // Dashboard lists
+    const upcomingDeadlines = computed(() => {
+      const today = new Date();
+      
+      return tasks.value
+        .filter(task => task.status !== 'Completed' && new Date(task.dueDate) > today)
+        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)) // Sort by due date ascending
+        .slice(0, 5); // Get only the next 5 upcoming deadlines
+    });
+
+    const recentlyCompletedTasks = computed(() => {
+      return tasks.value
+        .filter(task => task.status === 'Completed')
+        .slice(0, 5); // Get the 5 most recently completed tasks (assuming most recent are at the beginning)
+    });
+
+    const ProjectStatusChart = {
+      props: ['data'],
+      template: `
+        <div class="h-64">
+          <div id="projectStatusChart" ref="chartContainer" class="w-full h-full"></div>
+        </div>
+      `,
+      mounted() {
+        this.renderChart();
+      },
+      methods: {
+        renderChart() {
+          const { PieChart, Pie, Tooltip, Legend, Cell } = Recharts;
+          // Manual render using Recharts API
+          // This approach bypasses Vue's template system for the chart itself
+        }
+      },
+      watch: {
+        data() {
+          this.renderChart();
+        }
+      }
+    };
+
+    // Format data for project status chart
+    const projectStatusChartData = computed(() => {
+      const statusCounts = {
+        'Not Started': 0,
+        'In Progress': 0,
+        'On Hold': 0,
+        'Completed': 0
+      };
+      
+      projects.value.forEach(project => {
+        statusCounts[project.status]++;
+      });
+      
+      return {
+        labels: Object.keys(statusCounts),
+        datasets: [{
+          data: Object.values(statusCounts),
+          backgroundColor: [
+            '#CBD5E1', // Not Started - gray
+            '#3B82F6', // In Progress - blue
+            '#F59E0B', // On Hold - yellow
+            '#10B981'  // Completed - green
+          ],
+          hoverOffset: 4
+        }]
+      };
+    });
+
+    // Options for project status chart
+    const projectStatusChartOptions = computed(() => {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                return `${label}: ${value} projects`;
+              }
+            }
+          }
+        }
+      };
+    });
+
+    // Format data for department staff chart
+    const departmentStaffChartData = computed(() => {
+      const deptCounts = {};
+      
+      employees.value.forEach(employee => {
+        if (!deptCounts[employee.department]) {
+          deptCounts[employee.department] = 0;
+        }
+        deptCounts[employee.department]++;
+      });
+      
+      // Sort by count descending
+      const sortedDepts = Object.entries(deptCounts)
+        .sort((a, b) => b[1] - a[1])
+        .map(entry => ({ name: entry[0], value: entry[1] }));
+        
+      return {
+        labels: sortedDepts.map(d => d.name),
+        datasets: [{
+          label: 'Employees',
+          data: sortedDepts.map(d => d.value),
+          backgroundColor: '#172b4d',
+          borderWidth: 1
+        }]
+      };
+    });
+
+    // Options for department staff chart
+    const departmentStaffChartOptions = computed(() => {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      };
+    });
+
+    // Format data for task priority chart
+    const taskPriorityChartData = computed(() => {
+      const priorityCounts = {
+        'High': 0,
+        'Medium': 0,
+        'Low': 0
+      };
+      
+      tasks.value.forEach(task => {
+        priorityCounts[task.priority]++;
+      });
+      
+      return {
+        labels: Object.keys(priorityCounts),
+        datasets: [{
+          data: Object.values(priorityCounts),
+          backgroundColor: [
+            '#EF4444', // High - red
+            '#F59E0B', // Medium - yellow
+            '#10B981'  // Low - green
+          ],
+          hoverOffset: 4
+        }]
+      };
+    });
+
+    // Options for task priority chart
+    const taskPriorityChartOptions = computed(() => {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                return `${label}: ${value} tasks`;
+              }
+            }
+          }
+        }
+      };
+    });
+
+    // Format data for project progress chart
+    const projectProgressChartData = computed(() => {
+      const sortedProjects = projects.value
+        .map(p => ({ name: p.name, progress: p.progress }))
+        .sort((a, b) => b.progress - a.progress) // Sort by progress descending
+        .slice(0, 7); // Only show top 7 projects to avoid crowding
+      
+      return {
+        labels: sortedProjects.map(p => p.name),
+        datasets: [{
+          label: 'Progress (%)',
+          data: sortedProjects.map(p => p.progress),
+          backgroundColor: '#ff8f00',
+          borderWidth: 1
+        }]
+      };
+    });
+
+    // Options for project progress chart
+    const projectProgressChartOptions = computed(() => {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y',
+        scales: {
+          x: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: 'Completion %'
+            }
+          }
+        }
+      };
+    });
+
     return {
       // State
       sidebarOpen,
@@ -1282,7 +1695,36 @@ createApp({
       totalPages,
       goToPage,
       prevPage,
-      nextPage
+      nextPage,
+
+      // Dashboard
+      totalEmployees,
+      activeEmployees,
+      activeProjects,
+      pendingTasks,
+      completedTasks,
+      projectStatusData,
+      taskPriorityData,
+      departmentStaffCount,
+      projectProgressList,
+      upcomingDeadlines,
+      recentlyCompletedTasks,
+      ProjectStatusChart,
+      projectStatusChartData,
+      projectStatusChartOptions,
+      departmentStaffChartData,
+      departmentStaffChartOptions,
+      taskPriorityChartData,
+      taskPriorityChartOptions,
+      projectProgressChartData,
+      projectProgressChartOptions,
     };
   },
-}).mount("#app");
+});
+
+// Register components globally
+app.component('doughnut-chart', DoughnutChart);
+app.component('bar-chart', BarChart);
+app.component('horizontal-bar-chart', HorizontalBarChart);
+
+app.mount("#app");

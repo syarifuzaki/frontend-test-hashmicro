@@ -1157,6 +1157,59 @@ createApp({
       );
     };
 
+    // Pagination
+    const searchTerm = ref('');
+    const statusFilter = ref('All');
+    const currentPage = ref(1);
+    const itemsPerPage = ref(5);
+
+    // Add these computed properties to the setup() function
+    const filteredEmployees = computed(() => {
+      return employees.value.filter(employee => {
+        // Search filter
+        const matchesSearch = 
+          employee.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+          employee.email.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+          employee.department.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+          employee.position.toLowerCase().includes(searchTerm.value.toLowerCase());
+        
+        // Status filter
+        const matchesStatus = 
+          statusFilter.value === 'All' || 
+          employee.status === statusFilter.value;
+        
+        return matchesSearch && matchesStatus;
+      });
+    });
+
+    const paginatedEmployees = computed(() => {
+      const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+      const endIndex = startIndex + itemsPerPage.value;
+      return filteredEmployees.value.slice(startIndex, endIndex);
+    });
+
+    const totalPages = computed(() => {
+      return Math.ceil(filteredEmployees.value.length / itemsPerPage.value);
+    });
+
+    // Add these methods to the setup() function
+    const goToPage = (page) => {
+      if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page;
+      }
+    };
+
+    const prevPage = () => {
+      if (currentPage.value > 1) {
+        currentPage.value--;
+      }
+    };
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+      }
+    };
     return {
       // State
       sidebarOpen,
@@ -1218,6 +1271,18 @@ createApp({
       // Task Methods
       toggleTaskStatus,
       currentItem,
+
+      // Pagination
+      searchTerm,
+      statusFilter,
+      currentPage,
+      itemsPerPage,
+      filteredEmployees,
+      paginatedEmployees,
+      totalPages,
+      goToPage,
+      prevPage,
+      nextPage
     };
   },
 }).mount("#app");

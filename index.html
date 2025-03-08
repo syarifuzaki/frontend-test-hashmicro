@@ -17,11 +17,21 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
+    <!-- Google Fonts - Poppins -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+    <!-- Toast Library (Toastify-js) -->
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+    
     <!-- Custom Tailwind Configuration -->
     <script>
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              poppins: ["Poppins", "sans-serif"],
+            },
             colors: {
               hashmicro: {
                 red: "#e21c21",
@@ -30,15 +40,15 @@
               },
             },
             animation: {
-              "fade-in": "fadeIn 0.3s ease-in-out",
+              "fade-in": "fadeIn 0.5s ease-in-out",
               "slide-in": "slideIn 0.3s ease-in-out",
               "slide-out": "slideOut 0.3s ease-in-out",
               "bounce-in": "bounceIn 0.5s ease-in-out",
             },
             keyframes: {
               fadeIn: {
-                "0%": { opacity: "0" },
-                "100%": { opacity: "1" },
+                "0%": { opacity: "0", transform: "translateY(100px)" },
+                "100%": { opacity: "1", },
               },
               slideIn: {
                 "0%": { transform: "translateX(-100%)" },
@@ -60,27 +70,35 @@
     </script>
 
     <!-- Custom styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
+
   </head>
-  <body class="bg-gray-100">
+  <body class="bg-hashmicro-navy font-poppins">
     <div id="app" v-cloak>
       <!-- Mobile Nav Bar -->
       <div
         class="md:hidden bg-hashmicro-navy text-white p-4 flex justify-between items-center"
       >
         <div class="flex items-center">
-          <button @click="toggleSidebar" class="mr-4 focus:outline-none">
-            <i class="fas fa-bars"></i>
+          <button @click="toggleSidebar" class="mr-4 focus:outline-none rounded-full w-10 h-10 flex justify-center items-center hover:bg-gray-100/50 duration-300">
+            <i class="fa-solid fa-bars-staggered text-xl"></i>
           </button>
-          <img src="https://www.hashmicro.com/assets/logo/logo-hashmicro-white.webp" alt="" srcset="" class="h-5 w-auto">
-          <!-- <h1 class="text-lg font-bold">HashMicro</h1> -->
+          <!-- <img src="https://www.hashmicro.com/assets/logo/logo-hashmicro-white.webp" alt="" srcset="" class="h-5 w-auto">
+          <h1 class="text-lg font-bold">HashMicro</h1> -->
         </div>
-        <div>
+        <div class="flex items-center gap-2">
+          <a
+            href="https://github.com/syarifuzaki/frontend-test-hashmicro"
+            target="_blank"
+            class="bg-gray-50/10 hover:bg-gray-50/20 rounded-full w-10 h-10 flex items-center justify-center"
+          >
+            <i class="fa-brands fa-github text-xl"></i>
+          </a>
           <button
             @click="showProfileModal = true"
-            class="bg-hashmicro-red hover:bg-red-700 rounded-full w-8 h-8 flex items-center justify-center"
+            class="bg-gray-50/10 hover:bg-gray-50/20 rounded-full w-10 h-10 flex items-center justify-center text-lg"
           >
-            <i class="fas fa-user"></i>
+            A
           </button>
         </div>
       </div>
@@ -95,707 +113,784 @@
       <!-- Sidebar -->
       <aside
         :class="[
-          'fixed h-full bg-hashmicro-navy text-white w-64 overflow-y-auto transition-transform duration-300 ease-in-out z-30', 
+          'top-0 h-full bg-hashmicro-navy text-white w-64 overflow-y-auto transition-all duration-300 ease-in-out z-30 py-0 md:py-2.5 flex flex-col justify-between', 
+          sideBarOpenDesktop ? 'fixed' : 'fixed md:hidden',
           sidebarOpen ? 'transform-none' : '-translate-x-full md:transform-none'
         ]"
       >
-        <div class="p-4 border-b border-gray-700">
-          <div class="flex items-center justify-between">
-            <!-- <h1 class="text-2xl font-bold">HashMicros</h1> -->
-            <img src="https://www.hashmicro.com/assets/logo/logo-hashmicro-white.webp" alt="" srcset="" class="h-7 w-auto">
-            <!-- <button @click="toggleSidebar" class="md:hidden focus:outline-none">
-              <i class="fas fa-times"></i>
-            </button> -->
+        <div class="grow flex flex-col">
+          <div class="p-4 border-b border-gray-700">
+            <div class="flex items-center justify-between">
+              <!-- <h1 class="text-2xl font-bold">HashMicros</h1> -->
+              <img src="https://www.hashmicro.com/assets/logo/logo-hashmicro-white.webp" alt="" srcset="" class="h-7 w-auto">
+              <!-- <button @click="toggleSidebar" class="md:hidden focus:outline-none">
+                <i class="fas fa-times"></i>
+              </button> -->
+            </div>
           </div>
+  
+          <nav class="p-4 grow flex flex-col w-full justify-between">
+            <div class="grow">
+              <div class="mb-4">
+                <p class="text-gray-400 text-xs uppercase mb-2">Dashboard</p>
+                <a
+                  href="#"
+                  @click="setActiveView('dashboard')"
+                  :class="[
+                    'flex items-center p-2 rounded transition-colors', 
+                    activeView === 'dashboard' ? 'bg-hashmicro-red text-white hover:bg-red-700' : 'hover:bg-gray-700'
+                  ]"
+                >
+                  <i class="fas fa-home mr-3"></i>
+                  <span>Dashboard</span>
+                </a>
+              </div>
+    
+              <div class="mb-4">
+                <p class="text-gray-400 text-xs uppercase mb-2">Data Management</p>
+                <a
+                  href="#"
+                  @click="setActiveView('employees')"
+                  :class="[
+                    'flex items-center p-2 rounded transition-colors', 
+                    activeView === 'employees' ? 'bg-hashmicro-red text-white hover:bg-red-700' : 'hover:bg-gray-700'
+                  ]"
+                >
+                  <i class="fas fa-users mr-3"></i>
+                  <span>Employees</span>
+                </a>
+                <a
+                  href="#"
+                  @click="setActiveView('projects')"
+                  :class="[
+                    'flex items-center p-2 rounded transition-colors', 
+                    activeView === 'projects' ? 'bg-hashmicro-red text-white hover:bg-red-700' : 'hover:bg-gray-700'
+                  ]"
+                >
+                  <i class="fas fa-project-diagram mr-3"></i>
+                  <span>Projects</span>
+                </a>
+                <a
+                  href="#"
+                  @click="setActiveView('tasks')"
+                  :class="[
+                    'flex items-center p-2 rounded transition-colors', 
+                    activeView === 'tasks' ? 'bg-hashmicro-red text-white hover:bg-red-700' : 'hover:bg-gray-700'
+                  ]"
+                >
+                  <i class="fas fa-tasks mr-3"></i>
+                  <span>Tasks</span>
+                </a>
+              </div>
+    
+              <div class="mb-4">
+                <p class="text-gray-400 text-xs uppercase mb-2">Settings</p>
+                <a
+                  href="#"
+                  @click="setActiveView('component')"
+                  :class="[
+                    'flex items-center p-2 rounded transition-colors', 
+                    activeView === 'component' ? 'bg-hashmicro-red text-white hover:bg-red-700' : 'hover:bg-gray-700'
+                  ]"
+                >
+                  <i class="fas fa-user mr-3"></i>
+                  <span>Components</span>
+                </a>
+                <a
+                  href="#"
+                  @click="setActiveView('settings')"
+                  :class="[
+                    'flex items-center p-2 rounded transition-colors', 
+                    activeView === 'settings' ? 'bg-hashmicro-red text-white hover:bg-red-700' : 'hover:bg-gray-700'
+                  ]"
+                >
+                  <i class="fas fa-cog mr-3"></i>
+                  <span>Settings</span>
+                </a>
+              </div>
+            </div>
+  
+            <div class="mt-8">
+              <a
+                href="#"
+                class="flex items-center p-2 rounded hover:bg-red-500/20 text-red-300"
+              >
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </nav>
         </div>
 
-        <nav class="p-4">
-          <div class="mb-4">
-            <p class="text-gray-400 text-xs uppercase mb-2">Dashboard</p>
-            <a
-              href="#"
-              @click="setActiveView('dashboard')"
-              :class="[
-                'flex items-center p-2 rounded transition-colors', 
-                activeView === 'dashboard' ? 'bg-hashmicro-red text-white' : 'hover:bg-gray-700'
-              ]"
-            >
-              <i class="fas fa-home mr-3"></i>
-              <span>Dashboard</span>
-            </a>
-          </div>
-
-          <div class="mb-4">
-            <p class="text-gray-400 text-xs uppercase mb-2">Data Management</p>
-            <a
-              href="#"
-              @click="setActiveView('employees')"
-              :class="[
-                'flex items-center p-2 rounded transition-colors', 
-                activeView === 'employees' ? 'bg-hashmicro-red text-white' : 'hover:bg-gray-700'
-              ]"
-            >
-              <i class="fas fa-users mr-3"></i>
-              <span>Employees</span>
-            </a>
-            <a
-              href="#"
-              @click="setActiveView('projects')"
-              :class="[
-                'flex items-center p-2 rounded transition-colors', 
-                activeView === 'projects' ? 'bg-hashmicro-red text-white' : 'hover:bg-gray-700'
-              ]"
-            >
-              <i class="fas fa-project-diagram mr-3"></i>
-              <span>Projects</span>
-            </a>
-            <a
-              href="#"
-              @click="setActiveView('tasks')"
-              :class="[
-                'flex items-center p-2 rounded transition-colors', 
-                activeView === 'tasks' ? 'bg-hashmicro-red text-white' : 'hover:bg-gray-700'
-              ]"
-            >
-              <i class="fas fa-tasks mr-3"></i>
-              <span>Tasks</span>
-            </a>
-          </div>
-
-          <div class="mb-4">
-            <p class="text-gray-400 text-xs uppercase mb-2">Settings</p>
-            <a
-              href="#"
-              @click="setActiveView('profile')"
-              :class="[
-                'flex items-center p-2 rounded transition-colors', 
-                activeView === 'profile' ? 'bg-hashmicro-red text-white' : 'hover:bg-gray-700'
-              ]"
-            >
-              <i class="fas fa-user mr-3"></i>
-              <span>Profile</span>
-            </a>
-            <a
-              href="#"
-              @click="setActiveView('settings')"
-              :class="[
-                'flex items-center p-2 rounded transition-colors', 
-                activeView === 'settings' ? 'bg-hashmicro-red text-white' : 'hover:bg-gray-700'
-              ]"
-            >
-              <i class="fas fa-cog mr-3"></i>
-              <span>Settings</span>
-            </a>
-          </div>
-
-          <div class="mt-8">
-            <a
-              href="#"
-              class="flex items-center p-2 rounded hover:bg-gray-700 text-red-300"
-            >
-              <i class="fas fa-sign-out-alt mr-3"></i>
-              <span>Logout</span>
-            </a>
-          </div>
-        </nav>
+        <div class="p-4 border-t border-gray-700 text-sm">
+          Created by
+          <a
+            href="https://syarifuzaki.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-white font-bold hover:underline"
+            >Syarifuzaki</a
+          >
+        </div>
       </aside>
 
       <!-- Main Content -->
       <main
-        :class="['transition-all duration-300 ease-in-out', sidebarOpen ? 'md:ml-64' : 'ml-0 md:ml-64']"
+        :class="[
+          'transition-all duration-300 ease-in-out', 
+          sideBarOpenDesktop ? (sidebarOpen ? 'md:ml-64' : 'ml-0 md:ml-64') : 'md:ml-0',
+        ]"
       >
-        <!-- Dashboard View -->
-        <div v-if="activeView === 'dashboard'" class="p-4 md:p-8">
-          <h1 class="text-2xl font-bold mb-6 text-hashmicro-navy">Dashboard</h1>
+        <div class="p-4 bg-gray-100 rounded-lg md:rounded-xl mt-0 mx-4 mb-4 md:m-4 h-main-content">
+          <!-- Navbar Content -->
+          <div class="hidden md:flex justify-between items-center mb-4">
+            <button @click="toggleSidebarDesktop" class="mr-4 focus:outline-none rounded-full w-10 h-10 flex justify-center items-center hover:bg-gray-200 duration-300">
+              <i class="fa-solid fa-bars-staggered text-xl"></i>
+            </button>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div
-              class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
-            >
-              <div class="flex items-center">
-                <div
-                  class="bg-hashmicro-red bg-opacity-20 p-3 rounded-full mr-4"
-                >
-                  <i class="fas fa-users text-hashmicro-red"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Total Employees</p>
-                  <p class="text-2xl font-bold">156</p>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
-            >
-              <div class="flex items-center">
-                <div
-                  class="bg-hashmicro-orange bg-opacity-20 p-3 rounded-full mr-4"
-                >
-                  <i class="fas fa-project-diagram text-hashmicro-orange"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Active Projects</p>
-                  <p class="text-2xl font-bold">24</p>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
-            >
-              <div class="flex items-center">
-                <div
-                  class="bg-hashmicro-navy bg-opacity-20 p-3 rounded-full mr-4"
-                >
-                  <i class="fas fa-tasks text-hashmicro-navy"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-500">Pending Tasks</p>
-                  <p class="text-2xl font-bold">78</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
-              Recent Activities
-            </h2>
-            <div class="space-y-4">
-              <div
-                class="flex p-3 border-l-4 border-hashmicro-red bg-red-50 rounded"
+            <div class="flex items-center gap-2">
+              <a
+                href="https://github.com/syarifuzaki/frontend-test-hashmicro"
+                target="_blank"
+                class="bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center"
               >
-                <div class="mr-4">
-                  <i class="fas fa-user-plus text-hashmicro-red"></i>
-                </div>
-                <div>
-                  <p class="font-medium">New employee John Doe was added</p>
-                  <p class="text-sm text-gray-500">2 hours ago</p>
-                </div>
-              </div>
-
-              <div
-                class="flex p-3 border-l-4 border-hashmicro-orange bg-orange-50 rounded"
+                <i class="fa-brands fa-github text-xl"></i>
+              </a>
+              <button
+                @click="showProfileModal = true"
+                class="bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center text-lg"
               >
-                <div class="mr-4">
-                  <i class="fas fa-project-diagram text-hashmicro-orange"></i>
-                </div>
-                <div>
-                  <p class="font-medium">
-                    Project "Website Redesign" status updated to "In Progress"
-                  </p>
-                  <p class="text-sm text-gray-500">5 hours ago</p>
-                </div>
-              </div>
-
+                A
+              </button>
+            </div>
+          
+          </div>
+          
+          <!-- Dashboard View -->
+          <div 
+            v-if="activeView === 'dashboard'" 
+            class="animate-fade-in"
+          >
+            <h1 class="text-2xl font-bold mb-6 text-hashmicro-navy">Dashboard</h1>
+  
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div
-                class="flex p-3 border-l-4 border-hashmicro-navy bg-blue-50 rounded"
+                class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
               >
-                <div class="mr-4">
-                  <i class="fas fa-check-circle text-hashmicro-navy"></i>
-                </div>
-                <div>
-                  <p class="font-medium">
-                    Task "Update user documentation" marked as completed
-                  </p>
-                  <p class="text-sm text-gray-500">Yesterday</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Employees View -->
-        <div
-          v-if="activeView === 'employees'"
-          class="p-4 md:p-8 animate-fade-in"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-hashmicro-navy">Employees</h1>
-            <a
-              href="#"
-              @click="openCreateModal('employee')"
-              class="bg-hashmicro-red hover:bg-red-700 text-white py-2 px-4 rounded flex items-center transform transition-transform hover:scale-105"
-            >
-              <i class="fas fa-plus mr-2"></i> Add Employee
-            </a>
-          </div>
-
-          <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="p-4 flex justify-between items-center border-b">
-              <div class="relative w-64">
-                <i
-                  class="fas fa-search absolute left-3 top-3 text-gray-400"
-                ></i>
-                <input
-                  type="text"
-                  placeholder="Search employees..."
-                  class="w-full pl-10 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-hashmicro-red"
-                />
-              </div>
-
-              <div class="flex space-x-2">
-                <button
-                  class="bg-hashmicro-navy hover:bg-blue-800 text-white py-2 px-4 rounded flex items-center"
-                >
-                  <i class="fas fa-filter mr-2"></i> Filter
-                </button>
-                <button
-                  class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded flex items-center"
-                >
-                  <i class="fas fa-download mr-2"></i> Export
-                </button>
-              </div>
-            </div>
-
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Department
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Position
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Status
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr
-                    v-for="employee in employees"
-                    :key="employee.id"
-                    class="hover:bg-gray-50"
+                <div class="flex items-center">
+                  <div
+                    class="bg-hashmicro-red bg-opacity-20 p-3 rounded-full mr-4"
                   >
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="flex items-center">
-                        <div
-                          class="flex-shrink-0 h-10 w-10 bg-hashmicro-navy text-white rounded-full flex items-center justify-center"
+                    <i class="fas fa-users text-hashmicro-red"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Total Employees</p>
+                    <p class="text-2xl font-bold">156</p>
+                  </div>
+                </div>
+              </div>
+  
+              <div
+                class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              >
+                <div class="flex items-center">
+                  <div
+                    class="bg-hashmicro-orange bg-opacity-20 p-3 rounded-full mr-4"
+                  >
+                    <i class="fas fa-project-diagram text-hashmicro-orange"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Active Projects</p>
+                    <p class="text-2xl font-bold">24</p>
+                  </div>
+                </div>
+              </div>
+  
+              <div
+                class="bg-white rounded-lg shadow p-6 transform transition-transform hover:scale-105"
+              >
+                <div class="flex items-center">
+                  <div
+                    class="bg-hashmicro-navy bg-opacity-20 p-3 rounded-full mr-4"
+                  >
+                    <i class="fas fa-tasks text-hashmicro-navy"></i>
+                  </div>
+                  <div>
+                    <p class="text-sm text-gray-500">Pending Tasks</p>
+                    <p class="text-2xl font-bold">78</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="bg-white rounded-lg shadow p-6 mb-8">
+              <h2 class="text-lg font-bold mb-4 text-hashmicro-navy">
+                Recent Activities
+              </h2>
+              <div class="space-y-4">
+                <div
+                  class="flex p-3 border-l-4 border-hashmicro-red bg-red-50 rounded"
+                >
+                  <div class="mr-4">
+                    <i class="fas fa-user-plus text-hashmicro-red"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">New employee John Doe was added</p>
+                    <p class="text-sm text-gray-500">2 hours ago</p>
+                  </div>
+                </div>
+  
+                <div
+                  class="flex p-3 border-l-4 border-hashmicro-orange bg-orange-50 rounded"
+                >
+                  <div class="mr-4">
+                    <i class="fas fa-project-diagram text-hashmicro-orange"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">
+                      Project "Website Redesign" status updated to "In Progress"
+                    </p>
+                    <p class="text-sm text-gray-500">5 hours ago</p>
+                  </div>
+                </div>
+  
+                <div
+                  class="flex p-3 border-l-4 border-hashmicro-navy bg-blue-50 rounded"
+                >
+                  <div class="mr-4">
+                    <i class="fas fa-check-circle text-hashmicro-navy"></i>
+                  </div>
+                  <div>
+                    <p class="font-medium">
+                      Task "Update user documentation" marked as completed
+                    </p>
+                    <p class="text-sm text-gray-500">Yesterday</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Employees View -->
+          <div
+            v-if="activeView === 'employees'"
+            class="animate-fade-in"
+          >
+            <div class="flex justify-between items-center mb-6">
+              <h1 class="text-2xl font-bold text-hashmicro-navy">Employees</h1>
+              <a
+                href="#"
+                @click="openCreateModal('employee')"
+                class="bg-hashmicro-red hover:bg-red-700 text-white py-2 px-4 rounded flex items-center transform transition-transform hover:scale-105 duration-300"
+              >
+                <i class="fas fa-plus mr-2"></i> Add Employee
+              </a>
+            </div>
+  
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+              <div class="p-4 flex justify-between items-center border-b">
+                <div class="relative w-64">
+                  <i
+                    class="fas fa-search absolute left-3 top-3 text-gray-400"
+                  ></i>
+                  <input
+                    type="text"
+                    placeholder="Search employees..."
+                    class="w-full pl-10 pr-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-hashmicro-red"
+                  />
+                </div>
+  
+                <div class="flex space-x-2">
+                  <button
+                    class="bg-hashmicro-navy hover:bg-indigo-800 text-white py-2 px-4 rounded flex items-center duration-300"
+                  >
+                    <i class="fas fa-filter mr-2"></i> Filter
+                  </button>
+                  <button
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded flex items-center duration-300"
+                  >
+                    <i class="fas fa-download mr-2"></i> Export
+                  </button>
+                </div>
+              </div>
+  
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Name
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Department
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Position
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Status
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr
+                      v-for="employee in employees"
+                      :key="employee.id"
+                      class="hover:bg-gray-50"
+                    >
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                          <div
+                            class="flex-shrink-0 h-10 w-10 bg-hashmicro-navy text-white rounded-full flex items-center justify-center"
+                          >
+                            {{ employee.name.charAt(0) }}
+                          </div>
+                          <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">
+                              {{ employee.name }}
+                            </div>
+                            <div class="text-sm text-gray-500">
+                              {{ employee.email }}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                          {{ employee.department }}
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                          {{ employee.position }}
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                          :class="[
+                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                            employee.status === 'Active' ? 'bg-green-100 text-green-800' : 
+                            employee.status === 'On Leave' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                          ]"
                         >
-                          {{ employee.name.charAt(0) }}
+                          {{ employee.status }}
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                          <a
+                            href="#"
+                            @click="viewEmployee(employee)"
+                            class="text-hashmicro-navy hover:text-blue-800"
+                          >
+                            <i class="fas fa-eye"></i>
+                          </a>
+                          <a
+                            href="#"
+                            @click="editEmployee(employee)"
+                            class="text-hashmicro-orange hover:text-orange-800"
+                          >
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <a
+                            href="#"
+                            @click="deleteEmployee(employee)"
+                            class="text-hashmicro-red hover:text-red-800"
+                          >
+                            <i class="fas fa-trash"></i>
+                          </a>
                         </div>
-                        <div class="ml-4">
-                          <div class="text-sm font-medium text-gray-900">
-                            {{ employee.name }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+  
+              <div
+                class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
+              >
+                <div class="flex-1 flex justify-between sm:hidden">
+                  <a
+                    href="#"
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Previous
+                  </a>
+                  <a
+                    href="#"
+                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Next
+                  </a>
+                </div>
+                <div
+                  class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
+                >
+                  <div>
+                    <p class="text-sm text-gray-700">
+                      Showing <span class="font-medium">1</span> to
+                      <span class="font-medium">10</span> of
+                      <span class="font-medium">20</span> results
+                    </p>
+                  </div>
+                  <div>
+                    <nav
+                      class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                      aria-label="Pagination"
+                    >
+                      <a
+                        href="#"
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      >
+                        <i class="fas fa-chevron-left"></i>
+                      </a>
+                      <a
+                        href="#"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-hashmicro-navy hover:bg-gray-50"
+                      >
+                        1
+                      </a>
+                      <a
+                        href="#"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        2
+                      </a>
+                      <span
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 text-sm font-medium text-gray-500"
+                      >
+                        ...
+                      </span>
+                      <a
+                        href="#"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        9
+                      </a>
+                      <a
+                        href="#"
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      >
+                        10
+                      </a>
+                      <a
+                        href="#"
+                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                      >
+                        <i class="fas fa-chevron-right"></i>
+                      </a>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Projects View -->
+          <div
+            v-if="activeView === 'projects'"
+            class="animate-fade-in"
+          >
+            <div class="flex justify-between items-center mb-6">
+              <h1 class="text-2xl font-bold text-hashmicro-navy">Projects</h1>
+              <a
+                href="#"
+                @click="openCreateModal('project')"
+                class="bg-hashmicro-red hover:bg-red-700 text-white py-2 px-4 rounded flex items-center transform transition-transform hover:scale-105 duration-300"
+              >
+                <i class="fas fa-plus mr-2"></i> Add Project
+              </a>
+            </div>
+  
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div
+                v-for="project in projects"
+                :key="project.id"
+                class="bg-white rounded-lg shadow overflow-hidden transform transition-transform hover:scale-105"
+              >
+                <div class="p-6">
+                  <div class="flex justify-between items-start">
+                    <h2 class="text-lg font-bold text-hashmicro-navy mb-2 truncate">
+                      {{ project.name }}
+                    </h2>
+                    <span
+                      :class="[
+                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full shrink-0',
+                        project.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                        project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
+                        project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' : 
+                        'bg-red-100 text-red-800'
+                      ]"
+                    >
+                      {{ project.status }}
+                    </span>
+                  </div>
+  
+                  <div class="mb-4 h-16">
+                    <p class="text-gray-600">{{ project.description }}</p>
+                  </div>
+  
+                  <div class="flex justify-between items-center mb-4">
+                    <div>
+                      <p class="text-sm text-gray-500">Start Date</p>
+                      <p class="font-medium">{{ project.startDate }}</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">End Date</p>
+                      <p class="font-medium">{{ project.endDate }}</p>
+                    </div>
+                  </div>
+  
+                  <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-1">Progress</p>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                      <div
+                        class="bg-hashmicro-orange h-2.5 rounded-full"
+                        :style="{ width: project.progress + '%' }"
+                      ></div>
+                    </div>
+                    <div class="flex justify-between mt-1">
+                      <p class="text-xs text-gray-500">
+                        {{ project.progress }}% Complete
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        {{ project.tasksCompleted }}/{{ project.totalTasks }}
+                        Tasks
+                      </p>
+                    </div>
+                  </div>
+  
+                  <div class="border-t pt-4">
+                    <p class="text-sm text-gray-500 mb-2">Team</p>
+                    <div class="flex -space-x-2">
+                      <div
+                        v-for="(member, index) in project.team"
+                        :key="index"
+                        class="w-8 h-8 rounded-full bg-hashmicro-navy text-white flex items-center justify-center border-2 border-white"
+                        :title="member"
+                      >
+                        {{ member.charAt(0) }}
+                      </div>
+                      <div
+                        v-if="project.team.length > 4"
+                        class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs border-2 border-white"
+                      >
+                        +{{ project.team.length - 4 }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <div class="bg-gray-50 px-6 py-3 flex justify-end space-x-2">
+                  <a
+                    href="#"
+                    @click="viewProject(project)"
+                    class="text-hashmicro-navy hover:text-blue-800"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </a>
+                  <a
+                    href="#"
+                    @click="editProject(project)"
+                    class="text-hashmicro-orange hover:text-orange-800"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <a
+                    href="#"
+                    @click="deleteProject(project)"
+                    class="text-hashmicro-red hover:text-red-800"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <!-- Tasks View -->
+          <div 
+            v-if="activeView === 'tasks'" 
+            class="animate-fade-in"
+          >
+            <div class="flex justify-between items-center mb-6">
+              <h1 class="text-2xl font-bold text-hashmicro-navy">Tasks</h1>
+              <a
+                href="#"
+                @click="openCreateModal('task')"
+                class="bg-hashmicro-red hover:bg-red-700 text-white py-2 px-4 rounded flex items-center transform transition-transform hover:scale-105 duration-300"
+              >
+                <i class="fas fa-plus mr-2"></i> Add Task
+              </a>
+            </div>
+  
+            <div class="bg-white rounded-lg shadow p-6">
+              <div class="flex flex-wrap mb-6 gap-4">
+                <button
+                  :class="[
+                    'py-2 px-4 rounded font-medium', 
+                    activeTaskFilter === 'all' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                  ]"
+                  @click="activeTaskFilter = 'all'"
+                >
+                  All Tasks
+                </button>
+                <button
+                  :class="[
+                    'py-2 px-4 rounded font-medium', 
+                    activeTaskFilter === 'pending' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                  ]"
+                  @click="activeTaskFilter = 'pending'"
+                >
+                  Pending
+                </button>
+                <button
+                  :class="[
+                    'py-2 px-4 rounded font-medium', 
+                    activeTaskFilter === 'in-progress' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                  ]"
+                  @click="activeTaskFilter = 'in-progress'"
+                >
+                  In Progress
+                </button>
+                <button
+                  :class="[
+                    'py-2 px-4 rounded font-medium', 
+                    activeTaskFilter === 'completed' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                  ]"
+                  @click="activeTaskFilter = 'completed'"
+                >
+                  Completed
+                </button>
+              </div>
+  
+              <div class="space-y-4">
+                <div
+                  v-for="task in filteredTasks"
+                  :key="task.id"
+                  class="border rounded-lg overflow-hidden transform transition hover:shadow-md"
+                >
+                  <div
+                    class="p-4 flex flex-col md:flex-row md:items-center md:justify-between"
+                  >
+                    <div class="mb-4 md:mb-0">
+                      <div class="flex items-center">
+                        <label
+                          class="relative flex cursor-pointer items-center rounded-full p-3"
+                          :for="`checkbox-${task.id}`"
+                          data-ripple-dark="true"
+                          @click="toggleTaskStatus(task)"
+                        >
+                          <input
+                            type="checkbox"
+                            class="before:content[''] peer relative h-5 w-5 cursor-pointer appearance-none rounded-md border border-blue-gray-200 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-12 before:w-12 before:-translate-y-2/4 before:-translate-x-2/4 before:rounded-full before:bg-blue-gray-500 before:opacity-0 before:transition-opacity checked:border-hashmicro-orange checked:bg-hashmicro-orange checked:before:bg-hashmicro-orange hover:before:opacity-10"
+                            :id="`checkbox-${task.id}`"
+                            :checked="task.status === 'Completed'"
+                          />
+                          <div class="pointer-events-none absolute top-2/4 left-2/4 -translate-y-2/4 -translate-x-2/4 text-white opacity-0 transition-opacity peer-checked:opacity-100">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-3.5 w-3.5"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              stroke="currentColor"
+                              stroke-width="1"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"
+                              ></path>
+                            </svg>
                           </div>
-                          <div class="text-sm text-gray-500">
-                            {{ employee.email }}
-                          </div>
-                        </div>
+                        </label>
+                        <h3
+                          class="ml-3 text-lg font-medium cursor-pointer"
+                          :class="{'line-through text-gray-500': task.status === 'Completed'}"
+                          @click="toggleTaskStatus(task)"
+                        >
+                          {{ task.title }}
+                        </h3>
                       </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
-                        {{ employee.department }}
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
-                        {{ employee.position }}
-                      </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                      <p class="text-gray-600 ml-7">{{ task.description }}</p>
+                    </div>
+  
+                    <div class="flex flex-wrap items-center gap-4">
                       <span
                         :class="[
                           'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                          employee.status === 'Active' ? 'bg-green-100 text-green-800' : 
-                          employee.status === 'On Leave' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                          task.priority === 'High' ? 'bg-red-100 text-red-800' : 
+                          task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-green-100 text-green-800'
                         ]"
                       >
-                        {{ employee.status }}
+                        {{ task.priority }}
                       </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div class="flex space-x-2">
+  
+                      <span
+                        :class="[
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                          task.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                          task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
+                          'bg-yellow-100 text-yellow-800'
+                        ]"
+                      >
+                        {{ task.status }}
+                      </span>
+  
+                      <div class="flex gap-2">
                         <a
                           href="#"
-                          @click="viewEmployee(employee)"
-                          class="text-hashmicro-navy hover:text-blue-800"
-                        >
-                          <i class="fas fa-eye"></i>
-                        </a>
-                        <a
-                          href="#"
-                          @click="editEmployee(employee)"
+                          @click="editTask(task)"
                           class="text-hashmicro-orange hover:text-orange-800"
                         >
                           <i class="fas fa-edit"></i>
                         </a>
                         <a
                           href="#"
-                          @click="deleteEmployee(employee)"
+                          @click="deleteTask(task)"
                           class="text-hashmicro-red hover:text-red-800"
                         >
                           <i class="fas fa-trash"></i>
                         </a>
                       </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <div
-              class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
-            >
-              <div class="flex-1 flex justify-between sm:hidden">
-                <a
-                  href="#"
-                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Previous
-                </a>
-                <a
-                  href="#"
-                  class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Next
-                </a>
-              </div>
-              <div
-                class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p class="text-sm text-gray-700">
-                    Showing <span class="font-medium">1</span> to
-                    <span class="font-medium">10</span> of
-                    <span class="font-medium">20</span> results
-                  </p>
-                </div>
-                <div>
-                  <nav
-                    class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                    aria-label="Pagination"
-                  >
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                    >
-                      <i class="fas fa-chevron-left"></i>
-                    </a>
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-hashmicro-navy hover:bg-gray-50"
-                    >
-                      1
-                    </a>
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                      2
-                    </a>
-                    <span
-                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 text-sm font-medium text-gray-500"
-                    >
-                      ...
-                    </span>
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                      9
-                    </a>
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-                    >
-                      10
-                    </a>
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                    >
-                      <i class="fas fa-chevron-right"></i>
-                    </a>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Projects View -->
-        <div
-          v-if="activeView === 'projects'"
-          class="p-4 md:p-8 animate-fade-in"
-        >
-          <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-hashmicro-navy">Projects</h1>
-            <a
-              href="#"
-              @click="openCreateModal('project')"
-              class="bg-hashmicro-red hover:bg-red-700 text-white py-2 px-4 rounded flex items-center transform transition-transform hover:scale-105"
-            >
-              <i class="fas fa-plus mr-2"></i> Add Project
-            </a>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div
-              v-for="project in projects"
-              :key="project.id"
-              class="bg-white rounded-lg shadow overflow-hidden transform transition-transform hover:scale-105"
-            >
-              <div class="p-6">
-                <div class="flex justify-between items-start">
-                  <h2 class="text-lg font-bold text-hashmicro-navy mb-2">
-                    {{ project.name }}
-                  </h2>
-                  <span
-                    :class="[
-                      'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                      project.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                      project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
-                      project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' : 
-                      'bg-red-100 text-red-800'
-                    ]"
-                  >
-                    {{ project.status }}
-                  </span>
-                </div>
-
-                <p class="text-gray-600 mb-4">{{ project.description }}</p>
-
-                <div class="flex justify-between items-center mb-4">
-                  <div>
-                    <p class="text-sm text-gray-500">Start Date</p>
-                    <p class="font-medium">{{ project.startDate }}</p>
-                  </div>
-                  <div>
-                    <p class="text-sm text-gray-500">End Date</p>
-                    <p class="font-medium">{{ project.endDate }}</p>
-                  </div>
-                </div>
-
-                <div class="mb-4">
-                  <p class="text-sm text-gray-500 mb-1">Progress</p>
-                  <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div
-                      class="bg-hashmicro-orange h-2.5 rounded-full"
-                      :style="{ width: project.progress + '%' }"
-                    ></div>
-                  </div>
-                  <div class="flex justify-between mt-1">
-                    <p class="text-xs text-gray-500">
-                      {{ project.progress }}% Complete
-                    </p>
-                    <p class="text-xs text-gray-500">
-                      {{ project.tasksCompleted }}/{{ project.totalTasks }}
-                      Tasks
-                    </p>
-                  </div>
-                </div>
-
-                <div class="border-t pt-4">
-                  <p class="text-sm text-gray-500 mb-2">Team</p>
-                  <div class="flex -space-x-2">
-                    <div
-                      v-for="(member, index) in project.team"
-                      :key="index"
-                      class="w-8 h-8 rounded-full bg-hashmicro-navy text-white flex items-center justify-center border-2 border-white"
-                      :title="member"
-                    >
-                      {{ member.charAt(0) }}
-                    </div>
-                    <div
-                      v-if="project.team.length > 4"
-                      class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs border-2 border-white"
-                    >
-                      +{{ project.team.length - 4 }}
                     </div>
                   </div>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 px-6 py-3 flex justify-end space-x-2">
-                <a
-                  href="#"
-                  @click="viewProject(project)"
-                  class="text-hashmicro-navy hover:text-blue-800"
-                >
-                  <i class="fas fa-eye"></i>
-                </a>
-                <a
-                  href="#"
-                  @click="editProject(project)"
-                  class="text-hashmicro-orange hover:text-orange-800"
-                >
-                  <i class="fas fa-edit"></i>
-                </a>
-                <a
-                  href="#"
-                  @click="deleteProject(project)"
-                  class="text-hashmicro-red hover:text-red-800"
-                >
-                  <i class="fas fa-trash"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tasks View -->
-        <div v-if="activeView === 'tasks'" class="p-4 md:p-8 animate-fade-in">
-          <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-hashmicro-navy">Tasks</h1>
-            <a
-              href="#"
-              @click="openCreateModal('task')"
-              class="bg-hashmicro-red hover:bg-red-700 text-white py-2 px-4 rounded flex items-center transform transition-transform hover:scale-105"
-            >
-              <i class="fas fa-plus mr-2"></i> Add Task
-            </a>
-          </div>
-
-          <div class="bg-white rounded-lg shadow p-6">
-            <div class="flex flex-wrap mb-6 gap-4">
-              <button
-                :class="[
-                  'py-2 px-4 rounded font-medium', 
-                  activeTaskFilter === 'all' ? 'bg-hashmicro-navy text-white' : 'bg-gray-200 text-gray-700'
-                ]"
-                @click="activeTaskFilter = 'all'"
-              >
-                All Tasks
-              </button>
-              <button
-                :class="[
-                  'py-2 px-4 rounded font-medium', 
-                  activeTaskFilter === 'pending' ? 'bg-hashmicro-navy text-white' : 'bg-gray-200 text-gray-700'
-                ]"
-                @click="activeTaskFilter = 'pending'"
-              >
-                Pending
-              </button>
-              <button
-                :class="[
-                  'py-2 px-4 rounded font-medium', 
-                  activeTaskFilter === 'in-progress' ? 'bg-hashmicro-navy text-white' : 'bg-gray-200 text-gray-700'
-                ]"
-                @click="activeTaskFilter = 'in-progress'"
-              >
-                In Progress
-              </button>
-              <button
-                :class="[
-                  'py-2 px-4 rounded font-medium', 
-                  activeTaskFilter === 'completed' ? 'bg-hashmicro-navy text-white' : 'bg-gray-200 text-gray-700'
-                ]"
-                @click="activeTaskFilter = 'completed'"
-              >
-                Completed
-              </button>
-            </div>
-
-            <div class="space-y-4">
-              <div
-                v-for="task in filteredTasks"
-                :key="task.id"
-                class="border rounded-lg overflow-hidden transform transition hover:shadow-md"
-              >
-                <div
-                  class="p-4 flex flex-col md:flex-row md:items-center md:justify-between"
-                >
-                  <div class="mb-4 md:mb-0">
+  
+                  <div
+                    class="bg-gray-50 px-4 py-2 flex justify-between items-center text-sm text-gray-600"
+                  >
                     <div class="flex items-center">
-                      <input
-                        type="checkbox"
-                        :checked="task.status === 'Completed'"
-                        @click="toggleTaskStatus(task)"
-                        class="h-4 w-4 rounded border-gray-300 text-hashmicro-red focus:ring-hashmicro-red"
-                      />
-                      <h3
-                        class="ml-3 text-lg font-medium"
-                        :class="{'line-through text-gray-500': task.status === 'Completed'}"
-                      >
-                        {{ task.title }}
-                      </h3>
+                      <i class="fas fa-calendar-alt mr-1"></i>
+                      <span>Due: {{ task.dueDate }}</span>
                     </div>
-                    <p class="text-gray-600 ml-7">{{ task.description }}</p>
-                  </div>
-
-                  <div class="flex flex-wrap items-center gap-4">
-                    <span
-                      :class="[
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                        task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-green-100 text-green-800'
-                      ]"
-                    >
-                      {{ task.priority }}
-                    </span>
-
-                    <span
-                      :class="[
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        task.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                        task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
-                        'bg-yellow-100 text-yellow-800'
-                      ]"
-                    >
-                      {{ task.status }}
-                    </span>
-
-                    <div class="flex gap-2">
-                      <a
-                        href="#"
-                        @click="editTask(task)"
-                        class="text-hashmicro-orange hover:text-orange-800"
-                      >
-                        <i class="fas fa-edit"></i>
-                      </a>
-                      <a
-                        href="#"
-                        @click="deleteTask(task)"
-                        class="text-hashmicro-red hover:text-red-800"
-                      >
-                        <i class="fas fa-trash"></i>
-                      </a>
+  
+                    <div class="flex items-center">
+                      <i class="fas fa-user mr-1"></i>
+                      <span>{{ task.assignedTo }}</span>
                     </div>
-                  </div>
-                </div>
-
-                <div
-                  class="bg-gray-50 px-4 py-2 flex justify-between items-center text-sm text-gray-600"
-                >
-                  <div class="flex items-center">
-                    <i class="fas fa-calendar-alt mr-1"></i>
-                    <span>Due: {{ task.dueDate }}</span>
-                  </div>
-
-                  <div class="flex items-center">
-                    <i class="fas fa-user mr-1"></i>
-                    <span>{{ task.assignedTo }}</span>
-                  </div>
-
-                  <div>
-                    <span>Project: {{ task.project }}</span>
+  
+                    <div>
+                      <span>Project: {{ task.project }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -825,53 +920,43 @@
           >&#8203;
 
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-bounce-in"
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div>
-                <div class="text-center sm:text-left">
+                <div class="text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Add New Employee
                   </h3>
-                  <div class="mt-4">
-                    <form>
-                      <div class="mb-4">
-                        <label
-                          class="block text-gray-700 text-sm font-bold mb-2"
-                          for="name"
-                          >Name</label
-                        >
+                  <div class="mt-6">
+                    <form class="w-full flex flex-col gap-4">
+                      <div class="relative h-11 w-full min-w-[200px]">
                         <input
-                          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          id="name"
-                          type="text"
-                          placeholder="Full Name"
+                          class="peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-hashmicro-orange focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                          placeHolder=" "
                         />
+                        <label 
+                          class="h-fit border-0 before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-hashmicro-orange peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-hashmicro-orange peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-hashmicro-orange peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                          Full Name
+                        </label>
                       </div>
 
-                      <div class="mb-4">
-                        <label
-                          class="block text-gray-700 text-sm font-bold mb-2"
-                          for="email"
-                          >Email</label
-                        >
+                      <div class="relative h-11 w-full min-w-[200px]">
                         <input
-                          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          id="email"
-                          type="email"
-                          placeholder="Email Address"
+                          class="peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-hashmicro-orange focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                          placeHolder=" "
                         />
+                        <label 
+                          class="h-fit border-0 before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-hashmicro-orange peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-hashmicro-orange peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-hashmicro-orange peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                          Email
+                        </label>
                       </div>
 
-                      <div class="mb-4">
-                        <label
-                          class="block text-gray-700 text-sm font-bold mb-2"
-                          for="department"
-                          >Department</label
-                        >
+                      <div class="relative h-11 w-full min-w-[200px]">
                         <select
-                          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          class="peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-hashmicro-orange focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                           id="department"
+                          placeholder=" "
                         >
                           <option value="">Select Department</option>
                           <option value="HR">Human Resources</option>
@@ -880,36 +965,38 @@
                           <option value="Marketing">Marketing</option>
                           <option value="Operations">Operations</option>
                         </select>
+                        <label 
+                          class="h-fit border-0 before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-hashmicro-orange peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-hashmicro-orange peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-hashmicro-orange peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                          Department
+                        </label>
                       </div>
 
-                      <div class="mb-4">
-                        <label
-                          class="block text-gray-700 text-sm font-bold mb-2"
-                          for="position"
-                          >Position</label
-                        >
+                      <div class="relative h-11 w-full min-w-[200px]">
                         <input
-                          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          id="position"
-                          type="text"
-                          placeholder="Position"
+                          class="peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-hashmicro-orange focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                          placeHolder=" "
                         />
+                        <label 
+                          class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-hashmicro-orange peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-hashmicro-orange peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-hashmicro-orange peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                          Position
+                        </label>
                       </div>
 
-                      <div class="mb-4">
-                        <label
-                          class="block text-gray-700 text-sm font-bold mb-2"
-                          for="status"
-                          >Status</label
-                        >
+                      <div class="relative h-11 w-full min-w-[200px]">
                         <select
-                          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                          class="peer h-full w-full rounded-md border border-blue-gray-200 bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-hashmicro-orange focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
                           id="status"
+                          placeholder=" "
                         >
+                          <option value="">Select Status</option>
                           <option value="Active">Active</option>
                           <option value="On Leave">On Leave</option>
                           <option value="Terminated">Terminated</option>
                         </select>
+                        <label 
+                          class="h-fit border-0 before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-hashmicro-orange peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-hashmicro-orange peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-hashmicro-orange peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
+                          Status
+                        </label>
                       </div>
                     </form>
                   </div>
@@ -959,11 +1046,11 @@
           >&#8203;
 
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-bounce-in"
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div>
-                <div class="text-center sm:text-left">
+                <div class="text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Add New Project
                   </h3>
@@ -1111,11 +1198,11 @@
           >&#8203;
 
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-bounce-in"
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div>
-                <div class="text-center sm:text-left">
+                <div class="text-left">
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
                     Add New Task
                   </h3>
@@ -1285,7 +1372,7 @@
           >&#8203;
 
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-bounce-in"
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
@@ -1346,7 +1433,7 @@
           >&#8203;
 
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full animate-bounce-in"
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <div class="sm:flex sm:items-start">
@@ -1410,6 +1497,7 @@
       createApp({
         setup() {
           const sidebarOpen = ref(false);
+          const sideBarOpenDesktop = ref(true);
           const activeView = ref("dashboard");
           const showCreateModal = ref(false);
           const createModalType = ref("");
@@ -1600,6 +1688,10 @@
             sidebarOpen.value = !sidebarOpen.value;
           };
 
+          const toggleSidebarDesktop = () => {
+            sideBarOpenDesktop.value = !sideBarOpenDesktop.value;
+          };
+
           const setActiveView = (view) => {
             activeView.value = view;
             // Close sidebar on mobile when changing views
@@ -1611,6 +1703,29 @@
           const openCreateModal = (type) => {
             createModalType.value = type;
             showCreateModal.value = true;
+          };
+
+          // Toast functions using Toastify
+          const showToast = (message, type) => {
+            let backgroundColor = "#172b4d"; // Default/info - navy
+            
+            if (type === "success") {
+              backgroundColor = "#10B981"; // Success - green
+            } else if (type === "error") {
+              backgroundColor = "#e21c21"; // Error - hashmicro red
+            } else if (type === "warning") {
+              backgroundColor = "#ff8f00"; // Warning - hashmicro orange
+            }
+            
+            Toastify({
+              text: message,
+              duration: 5000,
+              close: true,
+              gravity: "top",
+              position: "right",
+              backgroundColor: backgroundColor,
+              stopOnFocus: true,
+            }).showToast();
           };
 
           const viewEmployee = (employee) => {
@@ -1626,6 +1741,7 @@
           const deleteEmployee = (employee) => {
             console.log("Delete employee:", employee);
             showDeleteModal.value = true;
+            showToast(`${employee} has been removed successfully.`, "success");
           };
 
           const viewProject = (project) => {
@@ -1660,6 +1776,7 @@
 
           return {
             sidebarOpen,
+            sideBarOpenDesktop,
             activeView,
             showCreateModal,
             createModalType,
@@ -1671,6 +1788,7 @@
             tasks,
             filteredTasks,
             toggleSidebar,
+            toggleSidebarDesktop,
             setActiveView,
             openCreateModal,
             viewEmployee,

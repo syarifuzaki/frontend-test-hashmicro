@@ -80,7 +80,7 @@
     <div id="app" v-cloak>
       <!-- Mobile Nav Bar -->
       <div
-        class="md:hidden bg-hashmicro-navy text-white p-4 flex justify-between items-center"
+        class="sticky top-0 z-10 md:hidden bg-hashmicro-navy text-white p-4 flex justify-between items-center"
       >
         <div class="flex items-center">
           <button @click="toggleSidebar" class="mr-4 focus:outline-none rounded-full w-10 h-10 flex justify-center items-center hover:bg-gray-100/50 duration-300">
@@ -272,9 +272,9 @@
           sideBarOpenDesktop ? (sidebarOpen ? 'md:ml-64' : 'ml-0 md:ml-64') : 'md:ml-0',
         ]"
       >
-        <div class="p-4 bg-gray-100 rounded-lg md:rounded-xl mt-0 mx-4 mb-4 md:m-4 h-main-content">
+        <div class="p-0 bg-gray-100 rounded-lg md:rounded-xl mt-0 mx-4 mb-4 md:m-4 h-main-content">
           <!-- Navbar Content -->
-          <div class="hidden md:flex justify-between items-center mb-4">
+          <div class="hidden md:flex justify-between items-center p-4 sticky top-0 bg-gray-100 z-10">
             <button @click="toggleSidebarDesktop" class="mr-4 focus:outline-none rounded-full w-10 h-10 flex justify-center items-center hover:bg-gray-200 duration-300">
               <i class="fa-solid fa-bars-staggered text-xl"></i>
             </button>
@@ -328,7 +328,7 @@
           <!-- Dashboard View -->
           <div 
             v-if="activeView === 'dashboard'" 
-            class="animate-fade-in"
+            class="animate-fade-in p-4 md:pb-4 md:px-4 md:pt-0"
           >
             <h1 class="text-2xl font-bold mb-6 text-hashmicro-navy">Dashboard</h1>
 
@@ -615,7 +615,7 @@
           <!-- Employees View -->
           <div
             v-if="activeView === 'employees'"
-            class="animate-fade-in"
+            class="animate-fade-in p-4 md:pb-4 md:px-4 md:pt-0"
           >
             <div class="flex justify-between items-center mb-6">
               <h1 class="text-2xl font-bold text-hashmicro-navy">Employees</h1>
@@ -930,7 +930,7 @@
           <!-- Projects View -->
           <div
             v-if="activeView === 'projects'"
-            class="animate-fade-in"
+            class="animate-fade-in p-4 md:pb-4 md:px-4 md:pt-0"
           >
             <div class="flex justify-between items-center mb-6">
               <h1 class="text-2xl font-bold text-hashmicro-navy">Projects</h1>
@@ -1052,7 +1052,7 @@
           <!-- Tasks View -->
           <div 
             v-if="activeView === 'tasks'" 
-            class="animate-fade-in"
+            class="animate-fade-in p-4 md:pb-4 md:px-4 md:pt-0"
           >
             <div class="flex justify-between items-center mb-6">
               <h1 class="text-2xl font-bold text-hashmicro-navy">Tasks</h1>
@@ -1228,7 +1228,7 @@
           <!-- Components View -->
           <div
             v-if="activeView === 'components'"
-            class="animate-fade-in"
+            class="animate-fade-in p-4 md:pb-4 md:px-4 md:pt-0"
           >
             <div class="flex justify-between items-center mb-6">
               <h1 class="text-2xl font-bold text-hashmicro-navy">Components</h1>
@@ -2212,13 +2212,13 @@
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="bg-white pt-4 pb-4 sm:pt-6 sm:pb-4">
               <div>
                 <div class="text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 px-4">
                     {{ currentItem ? 'Edit Project' : 'Add New Project' }}
                   </h3>
-                  <div class="mt-4">
+                  <div class="mt-4 px-4 max-h-96 overflow-y-auto">
                     <form>
                       <div class="mb-4">
                         <label
@@ -2419,13 +2419,13 @@
           <div
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full animate-bounce-in"
           >
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="bg-white pt-4 pb-4 sm:pt-6 sm:pb-4">
               <div>
                 <div class="text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  <h3 class="text-lg leading-6 font-medium text-gray-900 px-4">
                     {{ currentItem ? 'Edit Task' : 'Add New Task' }}
                   </h3>
-                  <div class="mt-4">
+                  <div class="mt-4 px-4 max-h-96 overflow-y-auto">
                     <form>
                       <div class="mb-4">
                         <label
@@ -2725,120 +2725,124 @@
               </div>
               
               <!-- Content -->
-              <div class="px-8 pt-16 pb-6">
-                <h2 class="text-2xl font-bold text-hashmicro-navy">{{ viewItem.name }}</h2>
-                <p class="text-gray-600 mb-6">{{ viewItem.position }}</p>
+              <div class="pt-16">
+                <div class="px-8">
+                  <h2 class="text-2xl font-bold text-hashmicro-navy">{{ viewItem.name }}</h2>
+                  <p class="text-gray-600 mb-6">{{ viewItem.position }}</p>
+                </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div class="space-y-4">
-                    <div>
-                      <p class="text-sm text-gray-500">Email</p>
-                      <p class="font-medium flex items-center">
-                        <i class="fas fa-envelope mr-2 text-hashmicro-red"></i>
-                        {{ viewItem.email }}
-                      </p>
+                <div class="max-h-52 overflow-y-auto px-8 pb-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="space-y-4">
+                      <div>
+                        <p class="text-sm text-gray-500">Email</p>
+                        <p class="font-medium flex items-center">
+                          <i class="fas fa-envelope mr-2 text-hashmicro-red"></i>
+                          {{ viewItem.email }}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <p class="text-sm text-gray-500">Department</p>
+                        <p class="font-medium flex items-center">
+                          <i class="fas fa-building mr-2 text-hashmicro-red"></i>
+                          {{ viewItem.department }}
+                        </p>
+                      </div>
                     </div>
                     
-                    <div>
-                      <p class="text-sm text-gray-500">Department</p>
-                      <p class="font-medium flex items-center">
-                        <i class="fas fa-building mr-2 text-hashmicro-red"></i>
-                        {{ viewItem.department }}
-                      </p>
+                    <div class="space-y-4">
+                      <div>
+                        <p class="text-sm text-gray-500">Status</p>
+                        <p class="flex items-center">
+                          <span :class="[
+                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full mr-2',
+                            viewItem.status === 'Active' ? 'bg-green-100 text-green-800' : 
+                            viewItem.status === 'On Leave' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                          ]">
+                            {{ viewItem.status }}
+                          </span>
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <p class="text-sm text-gray-500">Employee ID</p>
+                        <p class="font-medium flex items-center">
+                          <i class="fas fa-id-card mr-2 text-hashmicro-red"></i>
+                          EMP-{{ viewItem.id }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Assigned Projects -->
+                  <div>
+                    <h3 class="text-lg font-semibold text-hashmicro-navy border-b border-gray-200 pb-2 mb-3">
+                      Assigned Projects
+                    </h3>
+                    <div v-if="assignedProjects.length > 0" class="space-y-2">
+                      <div v-for="project in assignedProjects" :key="project.id" 
+                        class="bg-gray-50 p-3 rounded flex justify-between items-center">
+                        <div>
+                          <p class="font-medium">{{ project.name }}</p>
+                          <div class="flex space-x-4 text-sm text-gray-500">
+                            <span>{{ project.startDate }} - {{ project.endDate }}</span>
+                          </div>
+                        </div>
+                        <span :class="[
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                          project.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                          project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
+                          project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' : 
+                          'bg-gray-100 text-gray-800'
+                        ]">
+                          {{ project.status }}
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="text-center py-3 text-gray-500">
+                      No projects assigned
                     </div>
                   </div>
                   
-                  <div class="space-y-4">
-                    <div>
-                      <p class="text-sm text-gray-500">Status</p>
-                      <p class="flex items-center">
-                        <span :class="[
-                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full mr-2',
-                          viewItem.status === 'Active' ? 'bg-green-100 text-green-800' : 
-                          viewItem.status === 'On Leave' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-                        ]">
-                          {{ viewItem.status }}
-                        </span>
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <p class="text-sm text-gray-500">Employee ID</p>
-                      <p class="font-medium flex items-center">
-                        <i class="fas fa-id-card mr-2 text-hashmicro-red"></i>
-                        EMP-{{ viewItem.id }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Assigned Projects -->
-                <div>
-                  <h3 class="text-lg font-semibold text-hashmicro-navy border-b border-gray-200 pb-2 mb-3">
-                    Assigned Projects
-                  </h3>
-                  <div v-if="assignedProjects.length > 0" class="space-y-2">
-                    <div v-for="project in assignedProjects" :key="project.id" 
-                      class="bg-gray-50 p-3 rounded flex justify-between items-center">
-                      <div>
-                        <p class="font-medium">{{ project.name }}</p>
-                        <div class="flex space-x-4 text-sm text-gray-500">
-                          <span>{{ project.startDate }} - {{ project.endDate }}</span>
+                  <!-- Assigned Tasks -->
+                  <div class="mt-6">
+                    <h3 class="text-lg font-semibold text-hashmicro-navy border-b border-gray-200 pb-2 mb-3">
+                      Assigned Tasks
+                    </h3>
+                    <div v-if="assignedTasks.length > 0" class="space-y-2">
+                      <div v-for="task in assignedTasks" :key="task.id" 
+                        class="bg-gray-50 p-3 rounded">
+                        <div class="flex justify-between">
+                          <p class="font-medium">{{ task.title }}</p>
+                          <div class="flex space-x-2">
+                            <span :class="[
+                              'px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
+                              task.priority === 'High' ? 'bg-red-500' : 
+                              task.priority === 'Medium' ? 'bg-amber-500' : 
+                              'bg-emerald-500'
+                            ]">
+                              {{ task.priority }}
+                            </span>
+                            <span :class="[
+                              'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                              task.status === 'Completed' ? 'bg-green-100 text-green-800' : 
+                              task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
+                              'bg-yellow-100 text-yellow-800'
+                            ]">
+                              {{ task.status }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">
+                          <div>Project: {{ task.project }}</div>
+                          <div>Due: {{ task.dueDate }}</div>
                         </div>
                       </div>
-                      <span :class="[
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        project.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                        project.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
-                        project.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-gray-100 text-gray-800'
-                      ]">
-                        {{ project.status }}
-                      </span>
                     </div>
-                  </div>
-                  <div v-else class="text-center py-3 text-gray-500">
-                    No projects assigned
-                  </div>
-                </div>
-                
-                <!-- Assigned Tasks -->
-                <div class="mt-6">
-                  <h3 class="text-lg font-semibold text-hashmicro-navy border-b border-gray-200 pb-2 mb-3">
-                    Assigned Tasks
-                  </h3>
-                  <div v-if="assignedTasks.length > 0" class="space-y-2">
-                    <div v-for="task in assignedTasks" :key="task.id" 
-                      class="bg-gray-50 p-3 rounded">
-                      <div class="flex justify-between">
-                        <p class="font-medium">{{ task.title }}</p>
-                        <div class="flex space-x-2">
-                          <span :class="[
-                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
-                            task.priority === 'High' ? 'bg-red-500' : 
-                            task.priority === 'Medium' ? 'bg-amber-500' : 
-                            'bg-emerald-500'
-                          ]">
-                            {{ task.priority }}
-                          </span>
-                          <span :class="[
-                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                            task.status === 'Completed' ? 'bg-green-100 text-green-800' : 
-                            task.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
-                            'bg-yellow-100 text-yellow-800'
-                          ]">
-                            {{ task.status }}
-                          </span>
-                        </div>
-                      </div>
-                      <div class="text-sm text-gray-500 mt-1">
-                        <div>Project: {{ task.project }}</div>
-                        <div>Due: {{ task.dueDate }}</div>
-                      </div>
+                    <div v-else class="text-center py-3 text-gray-500">
+                      No tasks assigned
                     </div>
-                  </div>
-                  <div v-else class="text-center py-3 text-gray-500">
-                    No tasks assigned
                   </div>
                 </div>
               </div>
@@ -2901,7 +2905,7 @@
               </div>
             </div>
             
-            <div class="p-6">
+            <div class="p-6 max-h-96 overflow-y-auto">
               <div class="bg-orange-50 p-4 rounded-lg mb-6">
                 <h3 class="text-lg font-semibold text-hashmicro-orange mb-2">Description</h3>
                 <p class="text-gray-700">{{ viewItem.description }}</p>

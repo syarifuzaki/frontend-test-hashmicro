@@ -85,5 +85,3 @@ The application uses HashMicro's corporate colors:
 ## Development Notes
 
 This application is designed as a frontend-only system with no backend functionality. All actions (create, edit, delete) are simulated within the browser's memory and will reset when the page is refreshed.
-
-The interface incorporates animations and Material Design principles to enhance usability and aesthetic appeal while maintaining HashMicro's brand identity.

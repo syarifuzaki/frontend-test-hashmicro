@@ -97,12 +97,40 @@
           >
             <i class="fa-brands fa-github text-xl"></i>
           </a>
-          <button
-            @click="showProfileModal = true"
-            class="bg-gray-50/10 hover:bg-gray-50/20 rounded-full w-10 h-10 flex items-center justify-center text-lg"
-          >
-            A
-          </button>
+          <div class="relative">
+            <button
+              @click="toggleProfileMenu"
+              class="bg-gray-50/10 hover:bg-gray-50/20 rounded-full w-auto h-10 flex items-center justify-center p-2 gap-2 text-sm"
+            >
+              <div class="w-7 h-7 rounded-full bg-hashmicro-navy flex items-center justify-center text-white shrink-0 text-sm">
+                A
+              </div>
+              Admin User
+              <i class="fa-solid fa-chevron-down text-sm mr-1"></i>
+            </button>
+            <div
+            v-if="showProfileMenu"
+              class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden"
+            >
+              <div class="py-1">
+                <button 
+                  type="button" 
+                  class="flex items-center gap-4 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  @click="showProfileModal = true"
+                >
+                  <i class="fa-solid fa-user text-sm"></i>
+                  User Profile
+                </button>
+                <button 
+                  type="button" 
+                  class="flex items-center gap-4 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-red-50 hover:text-hashmicro-red"
+                >
+                  <i class="fas fa-sign-out-alt text-sm"></i>
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -190,14 +218,14 @@
                 <p class="text-gray-400 text-xs uppercase mb-2">Settings</p>
                 <a
                   href="#"
-                  @click="setActiveView('blank')"
+                  @click="setActiveView('components')"
                   :class="[
                     'flex items-center p-2 rounded transition-colors', 
-                    activeView === 'blank' ? 'bg-hashmicro-orange text-white hover:bg-orange-500' : 'hover:bg-gray-700'
+                    activeView === 'components' ? 'bg-hashmicro-orange text-white hover:bg-orange-500' : 'hover:bg-gray-700'
                   ]"
                 >
-                  <i class="fas fa-file mr-3"></i>
-                  <span>Blank Page</span>
+                  <i class="fas fa-gear mr-3"></i>
+                  <span>Components</span>
                 </a>
                 <!-- <a
                   href="#"
@@ -259,12 +287,40 @@
               >
                 <i class="fa-brands fa-github text-xl"></i>
               </a>
-              <button
-                @click="showProfileModal = true"
-                class="bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center text-lg"
-              >
-                A
-              </button>
+              <div class="relative">
+                <button
+                  @click="toggleProfileMenu"
+                  class="bg-gray-200 hover:bg-gray-300 rounded-full w-auto h-10 flex items-center justify-center p-2 gap-2 border text-sm"
+                >
+                  <div class="w-7 h-7 rounded-full bg-hashmicro-navy flex items-center justify-center text-white shrink-0 text-sm">
+                    A
+                  </div>
+                  Admin User
+                  <i class="fa-solid fa-chevron-down text-sm mr-1"></i>
+                </button>
+                <div
+                  v-if="showProfileMenu"
+                  class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden"
+                >
+                  <div class="py-1">
+                    <button 
+                      type="button" 
+                      class="flex items-center gap-4 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      @click="showProfileModal = true"
+                    >
+                      <i class="fa-solid fa-user text-sm"></i>
+                      User Profile
+                    </button>
+                    <button 
+                      type="button" 
+                      class="flex items-center gap-4 w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-red-50 hover:text-hashmicro-red"
+                    >
+                      <i class="fas fa-sign-out-alt text-sm"></i>
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           
           </div>
@@ -441,10 +497,10 @@
                       </div>
                       <div class="flex flex-col items-end">
                         <span :class="[
-                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full mb-1',
-                          task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                          task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-green-100 text-green-800'
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full mb-1 text-white',
+                          task.priority === 'High' ? 'bg-red-500' : 
+                          task.priority === 'Medium' ? 'bg-amber-500' : 
+                          'bg-emerald-500'
                         ]">
                           {{ task.priority }}
                         </span>
@@ -487,10 +543,10 @@
                         <p class="text-sm text-gray-500">{{ task.project }}</p>
                       </div>
                       <span :class="[
-                        'px-2 h-6 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                        task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-green-100 text-green-800'
+                        'px-2 h-6 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
+                        task.priority === 'High' ? 'bg-red-500' : 
+                        task.priority === 'Medium' ? 'bg-amber-500' : 
+                        'bg-emerald-500'
                       ]">
                         {{ task.priority }}
                       </span>
@@ -589,7 +645,7 @@
                   <div class="relative">
                     <select
                       v-model="statusFilter"
-                      class="appearance-none bg-hashmicro-navy hover:bg-indigo-800 text-white py-2 pl-4 pr-8 rounded focus:outline-none focus:ring-2 focus:ring-hashmicro-red duration-300"
+                      class="appearance-none bg-hashmicro-orange hover:bg-orange-500 text-white py-2 pl-4 pr-8 rounded focus:outline-none focus:ring-2 focus:ring-hashmicro-red duration-300"
                       @change="currentPage = 1"
                     >
                       <option value="All">All Status</option>
@@ -1013,17 +1069,22 @@
               <div class="flex flex-wrap mb-6 gap-4">
                 <button
                   :class="[
-                    'py-2 px-4 rounded font-medium', 
-                    activeTaskFilter === 'all' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                    'flex items-center gap-3 py-2 px-4 rounded font-medium', 
+                    activeTaskFilter === 'all' ? 'bg-hashmicro-navy text-white hover:bg-blue-900 duration-300' : 'bg-white text-hashmicro-navy border border-hashmicro-navy hover:bg-blue-50 duration-300'
                   ]"
                   @click="activeTaskFilter = 'all'"
                 >
                   All Tasks
+                  <div 
+                    class="w-6 h-6 rounded-full flex items-center justify-center font-semibold text-xs bg-hashmicro-red text-white"
+                  >
+                    {{ tasks.length }}
+                  </div>
                 </button>
                 <button
                   :class="[
                     'py-2 px-4 rounded font-medium', 
-                    activeTaskFilter === 'pending' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                    activeTaskFilter === 'pending' ? 'bg-hashmicro-navy text-white hover:bg-blue-900 duration-300' : 'bg-white text-hashmicro-navy border border-hashmicro-navy hover:bg-blue-50 duration-300'
                   ]"
                   @click="activeTaskFilter = 'pending'"
                 >
@@ -1032,7 +1093,7 @@
                 <button
                   :class="[
                     'py-2 px-4 rounded font-medium', 
-                    activeTaskFilter === 'in-progress' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                    activeTaskFilter === 'in-progress' ? 'bg-hashmicro-navy text-white hover:bg-blue-900 duration-300' : 'bg-white text-hashmicro-navy border border-hashmicro-navy hover:bg-blue-50 duration-300'
                   ]"
                   @click="activeTaskFilter = 'in-progress'"
                 >
@@ -1041,7 +1102,7 @@
                 <button
                   :class="[
                     'py-2 px-4 rounded font-medium', 
-                    activeTaskFilter === 'completed' ? 'bg-hashmicro-navy text-white hover:bg-indigo-800 duration-300' : 'bg-gray-200 text-gray-700 hover:bg-gray-300 duration-300'
+                    activeTaskFilter === 'completed' ? 'bg-hashmicro-navy text-white hover:bg-blue-900 duration-300' : 'bg-white text-hashmicro-navy border border-hashmicro-navy hover:bg-blue-50 duration-300'
                   ]"
                   @click="activeTaskFilter = 'completed'"
                 >
@@ -1103,10 +1164,10 @@
                     <div class="flex flex-wrap items-center gap-4">
                       <span
                         :class="[
-                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                          task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                          task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-green-100 text-green-800'
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
+                          task.priority === 'High' ? 'bg-red-500' : 
+                          task.priority === 'Medium' ? 'bg-amber-500' : 
+                          'bg-emerald-500'
                         ]"
                       >
                         {{ task.priority }}
@@ -1287,7 +1348,7 @@
               </button>
               <button
                 @click="showCreateModal = false; currentItem = null;"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-hashmicro-red shadow-sm px-4 py-2 bg-white text-base font-medium text-hashmicro-red hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-hashmicro-red sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Cancel
               </button>
@@ -1494,7 +1555,7 @@
               </button>
               <button
                 @click="showCreateModal = false; currentItem = null;"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-hashmicro-red shadow-sm px-4 py-2 bg-white text-base font-medium text-hashmicro-red hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-hashmicro-red sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Cancel
               </button>
@@ -1662,7 +1723,7 @@
               </button>
               <button
                 @click="showCreateModal = false; currentItem = null;"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-hashmicro-red shadow-sm px-4 py-2 bg-white text-base font-medium text-hashmicro-red hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-hashmicro-red sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Cancel
               </button>
@@ -1722,7 +1783,7 @@
               </button>
               <button
                 @click="showDeleteModal = false"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                class="mt-3 w-full inline-flex justify-center rounded-md border border-hashmicro-red shadow-sm px-4 py-2 bg-white text-base font-medium text-hashmicro-red hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-hashmicro-red sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Cancel
               </button>
@@ -1797,7 +1858,7 @@
               <a
                 href="#"
                 @click="showProfileModal = false"
-                class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto sm:text-sm"
+                class="py-2 px-4 bg-transparent text-hashmicro-orange rounded hover:bg-orange-50 transition-colors"
               >
                 Close
               </a>
@@ -1921,10 +1982,10 @@
                         <p class="font-medium">{{ task.title }}</p>
                         <div class="flex space-x-2">
                           <span :class="[
-                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                            task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                            task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                            'bg-green-100 text-green-800'
+                            'px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
+                            task.priority === 'High' ? 'bg-red-500' : 
+                            task.priority === 'Medium' ? 'bg-amber-500' : 
+                            'bg-emerald-500'
                           ]">
                             {{ task.priority }}
                           </span>
@@ -1955,7 +2016,7 @@
                 <button @click="editEmployee(viewItem)" class="py-2 px-4 bg-hashmicro-orange text-white rounded hover:bg-orange-600 transition-colors flex items-center">
                   <i class="fas fa-edit mr-2"></i> Edit
                 </button>
-                <button @click="closeViewModal" class="py-2 px-4 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                <button @click="closeViewModal" class="py-2 px-4 bg-transparent text-hashmicro-orange rounded hover:bg-orange-50 transition-colors">
                   Close
                 </button>
               </div>
@@ -1975,7 +2036,7 @@
 
           <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl w-full animate-bounce-in">
             <div class="bg-hashmicro-orange text-white p-6 relative">
-              <button @click="closeViewModal" class="absolute top-4 right-4 text-white hover:text-gray-200">
+              <button @click="closeViewModal" class="absolute top-0 right-1 text-white hover:text-gray-200 p-1">
                 <i class="fas fa-times text-xl"></i>
               </button>
               
@@ -1990,7 +2051,7 @@
                   viewItem.status === 'Completed' ? 'bg-green-100 text-green-800' : 
                   viewItem.status === 'In Progress' ? 'bg-blue-100 text-blue-800' : 
                   viewItem.status === 'On Hold' ? 'bg-yellow-100 text-yellow-800' : 
-                  'bg-gray-100 text-gray-800'
+                  'bg-red-100 text-red-800'
                 ]">
                   {{ viewItem.status }}
                 </span>
@@ -2084,10 +2145,10 @@
                       
                       <div class="flex space-x-2">
                         <span :class="[
-                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                          task.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                          task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-green-100 text-green-800'
+                          'px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
+                          task.priority === 'High' ? 'bg-red-500' : 
+                          task.priority === 'Medium' ? 'bg-amber-500' : 
+                          'bg-emerald-500'
                         ]">
                           {{ task.priority }}
                         </span>
@@ -2128,7 +2189,7 @@
               <button @click="editProject(viewItem)" class="py-2 px-4 bg-hashmicro-orange text-white rounded hover:bg-orange-600 transition-colors flex items-center">
                 <i class="fas fa-edit mr-2"></i> Edit
               </button>
-              <button @click="closeViewModal" class="py-2 px-4 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+              <button @click="closeViewModal" class="py-2 px-4 bg-transparent text-hashmicro-orange rounded hover:bg-orange-50 transition-colors">
                 Close
               </button>
             </div>
@@ -2166,8 +2227,8 @@
                     <div :class="[
                       'w-10 h-10 rounded-full flex items-center justify-center text-white',
                       viewItem.priority === 'High' ? 'bg-red-500' : 
-                      viewItem.priority === 'Medium' ? 'bg-yellow-500' : 
-                      'bg-green-500'
+                      viewItem.priority === 'Medium' ? 'bg-amber-500' : 
+                      'bg-emerald-500'
                     ]">
                       <i :class="[
                         viewItem.priority === 'High' ? 'fas fa-arrow-up' : 
@@ -2227,10 +2288,10 @@
                     <p class="text-sm text-gray-500">Priority</p>
                     <p class="font-medium">
                       <span :class="[
-                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        viewItem.priority === 'High' ? 'bg-red-100 text-red-800' : 
-                        viewItem.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 
-                        'bg-green-100 text-green-800'
+                        'px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white',
+                        viewItem.priority === 'High' ? 'bg-red-500' : 
+                        viewItem.priority === 'Medium' ? 'bg-amber-500' : 
+                        'bg-emerald-500'
                       ]">
                         {{ viewItem.priority }}
                       </span>
@@ -2323,7 +2384,7 @@
                   <button @click="editTask(viewItem)" class="py-2 px-4 bg-hashmicro-orange text-white rounded hover:bg-orange-600 transition-colors flex items-center">
                     <i class="fas fa-edit mr-2"></i> Edit
                   </button>
-                  <button @click="closeViewModal" class="py-2 px-4 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                  <button @click="closeViewModal" class="py-2 px-4 bg-transparent text-hashmicro-orange rounded hover:bg-orange-50 transition-colors">
                     Close
                   </button>
                 </div>

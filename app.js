@@ -143,7 +143,8 @@ const app = createApp({
     // UI state
     const sidebarOpen = ref(false);
     const sideBarOpenDesktop = ref(true);
-    const activeView = ref("dashboard");
+    const showProfileMenu = ref(false);
+    const activeView = ref("employees");
     const showCreateModal = ref(false);
     const createModalType = ref("");
     const showDeleteModal = ref(false);
@@ -699,6 +700,10 @@ const app = createApp({
 
     const toggleSidebarDesktop = () => {
       sideBarOpenDesktop.value = !sideBarOpenDesktop.value;
+    };
+
+    const toggleProfileMenu = () => {
+      showProfileMenu.value = !showProfileMenu.value;
     };
 
     const setActiveView = (view) => {
@@ -1627,6 +1632,7 @@ const app = createApp({
       // State
       sidebarOpen,
       sideBarOpenDesktop,
+      showProfileMenu,
       activeView,
       showCreateModal,
       createModalType,
@@ -1657,6 +1663,7 @@ const app = createApp({
       // UI Methods
       toggleSidebar,
       toggleSidebarDesktop,
+      toggleProfileMenu,
       setActiveView,
 
       // CRUD Methods
